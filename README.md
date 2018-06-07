@@ -15,7 +15,7 @@ import 'package:shimmer/shimmer.dart';
 SizedBox(
   width: 200.0,
   height: 100.0,
-  child: Shimmer(
+  child: Shimmer.fromColors(
     baseColor: Colors.red,
     highlightColor: Colors.yellow,
     child: Text(

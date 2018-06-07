@@ -32,7 +32,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: SizedBox(
           width: 210.0,
           height: 240.0,
-          child: Shimmer(
+          child: Shimmer.fromColors(
+            baseColor: const Color(0xFFBBDEFB),
+            highlightColor: const Color(0xFF90CAF9),
             child: Column(
               children: [
                 _PlaceHolder(),

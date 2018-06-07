@@ -1,3 +1,10 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1]
 
-* TODO: Describe initial release.
+* Initial release.
+
+## [0.0.2]
+* update metadata
+
+## [0.0.3]
+* add `direction` property to allow customizing animation direction
+* **breaking:** define a new default constructor to allow customizing gradient pattern, the old default construct is renamed to `Shimmer.fromColors` 
