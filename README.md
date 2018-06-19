@@ -6,12 +6,12 @@ A package provides an easy way to add shimmer effect in Flutter project
 
 ## How to use
 
-```
+```dart
 import 'package:shimmer/shimmer.dart';
 
 ```
 
-```
+```dart
 SizedBox(
   width: 200.0,
   height: 100.0,
