@@ -2,7 +2,10 @@
 
 A package provides an easy way to add shimmer effect in Flutter project
 
-<img src="./screenshot/shimmer.gif?raw=true"/>
+<p>
+    <img src="./screenshots/loading_list.gif?raw=true"/>
+    <img src="./screenshots/slide_to_unlock.gif?raw=true"/>
+</p>
 
 ## How to use
 

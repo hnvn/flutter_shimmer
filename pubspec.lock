@@ -360,4 +360,4 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=2.0.0-dev.52.0 <=2.0.0-dev.59.0.flutter-1a185867a9"
+  dart: ">=2.0.0-dev.52.0 <=2.0.0-dev.60.0.flutter-a5e41681e5"
