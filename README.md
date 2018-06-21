@@ -1,5 +1,7 @@
 # Shimmer
 
+[![pub package](https://img.shields.io/pub/v/shimmer.svg)](https://pub.dartlang.org/packages/shimmer)
+
 A package provides an easy way to add shimmer effect in Flutter project
 
 <p>
