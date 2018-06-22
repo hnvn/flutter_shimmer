@@ -47,6 +47,15 @@ class Shimmer extends StatefulWidget {
 
   @override
   _ShimmerState createState() => _ShimmerState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(new DiagnosticsProperty<Gradient>('gradient', gradient, defaultValue: null));
+    properties.add(new EnumProperty<ShimmerDirection>('direction', direction));
+    properties.add(new DiagnosticsProperty<Duration>('period', period, defaultValue: null));
+  }
+
 }
 
 class _ShimmerState extends State<Shimmer> with TickerProviderStateMixin {
@@ -84,6 +93,7 @@ class _ShimmerState extends State<Shimmer> with TickerProviderStateMixin {
   }
 }
 
+@visibleForTesting
 class _Shimmer extends SingleChildRenderObjectWidget {
   final double percent;
   final ShimmerDirection direction;
@@ -103,6 +113,7 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   }
 }
 
+@visibleForTesting
 class _ShimmerFilter extends RenderProxyBox {
   final _clearPaint = Paint();
   final Paint _gradientPaint;
