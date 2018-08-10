@@ -10,3 +10,6 @@
 
 ## [0.0.4]
 * update metadata
+
+## [0.0.5]
+* re-config to support Dart2
