@@ -43,7 +43,12 @@ class Shimmer extends StatefulWidget {
               0.65,
               1.0
             ]),
-        super(key: key);
+        super(key: key) {
+    if (period.inMilliseconds != null &&
+        period.inMilliseconds < Duration(milliseconds: 0).inMilliseconds) {
+      throw _ShimmerException("Period cannot be negative, recieved $period");
+    }
+  }
 
   @override
   _ShimmerState createState() => _ShimmerState();
@@ -51,11 +56,12 @@ class Shimmer extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(new DiagnosticsProperty<Gradient>('gradient', gradient, defaultValue: null));
+    properties.add(new DiagnosticsProperty<Gradient>('gradient', gradient,
+        defaultValue: null));
     properties.add(new EnumProperty<ShimmerDirection>('direction', direction));
-    properties.add(new DiagnosticsProperty<Duration>('period', period, defaultValue: null));
+    properties.add(new DiagnosticsProperty<Duration>('period', period,
+        defaultValue: null));
   }
-
 }
 
 class _ShimmerState extends State<Shimmer> with TickerProviderStateMixin {
@@ -176,5 +182,16 @@ class _ShimmerFilter extends RenderProxyBox {
 
   double _offset(double start, double end, double percent) {
     return start + (end - start) * percent;
+  }
+}
+
+class _ShimmerException implements Exception {
+  String cause;
+  _ShimmerException([this.cause]);
+
+  @override
+  String toString() {
+    if (cause == null) return "Exception";
+    return "ShimmerException: $cause";
   }
 }
