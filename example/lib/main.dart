@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ListTile(
             title: Text('Slide To Unlock'),
             onTap: () => Navigator.of(context).pushNamed('slide'),
-          )
+          ),
         ],
       ),
     );
@@ -170,9 +170,7 @@ class SlideToUnlockPage extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    '${hour < 10 ? '0$hour' : '$hour'}:${minute < 10
-                        ? '0$minute'
-                        : '$minute'}',
+                    '${hour < 10 ? '0$hour' : '$hour'}:${minute < 10 ? '0$minute' : '$minute'}',
                     style: TextStyle(
                       fontSize: 60.0,
                       color: Colors.white,

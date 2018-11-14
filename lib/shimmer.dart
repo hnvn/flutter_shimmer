@@ -1,10 +1,46 @@
+///
+/// * author: hunghd
+/// * email: hunghd.yb@gmail.com
+///
+/// A package provides an easy way to add shimmer effect to Flutter application
+///
+
 library shimmer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+///
+/// An enum defines all supported directions of shimmer effect
+///
+/// * [ShimmerDirection.ltr] left to right direction
+/// * [ShimmerDirection.rtl right to left direction
+/// * [ShimmerDirection.ttb] top to bottom direction
+/// * [ShimmerDirection.btt] bottom to top direction
+///
 enum ShimmerDirection { ltr, rtl, ttb, btt }
 
+///
+/// A widget renders shimmer effect over [child] widget tree.
+///
+/// [child] defines an area that shimmer effect blends on. You can build [child]
+/// from whatever [Widget] you like but there're some notices in order to get
+/// exact expected effect and get better rendering performance:
+///
+/// * Use static [Widget] (which is an instance of [StatelessWidget]).
+/// * [Widget] should be a solid color element. Every colors you set on these
+/// [Widget]s will be overridden by colors of [gradient].
+/// * Shimmer effect only affects to opaque areas of [child], transparent areas
+/// still stays transparent.
+///
+/// [period] controls the speed of shimmer effect. The default value is 1500
+/// milliseconds.
+///
+/// [direction] controls the direction of shimmer effect. The default value
+/// is [ShimmerDirection.ltr].
+///
+/// [gradient] controls colors of shimmer effect.
+///
 class Shimmer extends StatefulWidget {
   final Widget child;
   final Duration period;
@@ -19,6 +55,11 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
   }) : super(key: key);
 
+  ///
+  /// A convenient constructor provides an easy and convenient way to create a
+  /// [Shimmer] which [gradient] is [LinearGradient] made up of `baseColor` and
+  /// `highlightColor`.
+  ///
   Shimmer.fromColors(
       {Key key,
       @required this.child,
@@ -58,7 +99,7 @@ class Shimmer extends StatefulWidget {
 
 }
 
-class _ShimmerState extends State<Shimmer> with TickerProviderStateMixin {
+class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   AnimationController controller;
 
   @override
