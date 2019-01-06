@@ -14,7 +14,7 @@ import 'package:flutter/rendering.dart';
 /// An enum defines all supported directions of shimmer effect
 ///
 /// * [ShimmerDirection.ltr] left to right direction
-/// * [ShimmerDirection.rtl right to left direction
+/// * [ShimmerDirection.rtl] right to left direction
 /// * [ShimmerDirection.ttb] top to bottom direction
 /// * [ShimmerDirection.btt] bottom to top direction
 ///
@@ -41,11 +41,15 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 ///
 /// [gradient] controls colors of shimmer effect.
 ///
+/// [loop] the number of animation loop, set value of `0` to make animation run
+/// forever.
+///
 class Shimmer extends StatefulWidget {
   final Widget child;
   final Duration period;
   final ShimmerDirection direction;
   final Gradient gradient;
+  final int loop;
 
   Shimmer({
     Key key,
@@ -53,6 +57,7 @@ class Shimmer extends StatefulWidget {
     @required this.gradient,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
+    this.loop = 0,
   }) : super(key: key);
 
   ///
@@ -66,7 +71,8 @@ class Shimmer extends StatefulWidget {
       @required Color baseColor,
       @required Color highlightColor,
       this.period = const Duration(milliseconds: 1500),
-      this.direction = ShimmerDirection.ltr})
+      this.direction = ShimmerDirection.ltr,
+      this.loop = 0})
       : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -92,29 +98,37 @@ class Shimmer extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(new DiagnosticsProperty<Gradient>('gradient', gradient, defaultValue: null));
+    properties.add(new DiagnosticsProperty<Gradient>('gradient', gradient,
+        defaultValue: null));
     properties.add(new EnumProperty<ShimmerDirection>('direction', direction));
-    properties.add(new DiagnosticsProperty<Duration>('period', period, defaultValue: null));
+    properties.add(new DiagnosticsProperty<Duration>('period', period,
+        defaultValue: null));
   }
-
 }
 
 class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
-  AnimationController controller;
+  AnimationController _controller;
+  int _count;
 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(vsync: this, duration: widget.period)
+    _count = 0;
+    _controller = AnimationController(vsync: this, duration: widget.period)
       ..addListener(() {
         setState(() {});
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          controller.repeat();
+          _count++;
+          if (widget.loop <= 0) {
+            _controller.repeat();
+          } else if (_count < widget.loop) {
+            _controller.forward(from: 0.0);
+          }
         }
-      });
-    controller.forward();
+      })
+      ..forward();
   }
 
   @override
@@ -123,18 +137,17 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
       child: widget.child,
       direction: widget.direction,
       gradient: widget.gradient,
-      percent: controller.value,
+      percent: _controller.value,
     );
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 }
 
-@visibleForTesting
 class _Shimmer extends SingleChildRenderObjectWidget {
   final double percent;
   final ShimmerDirection direction;

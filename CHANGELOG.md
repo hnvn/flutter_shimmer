@@ -1,4 +1,9 @@
-## [0.0.6] - 2018-14-11
+## [1.0.0] - 2019-01-06
+
+* support animation loop control
+* the package is stable enough to reach v1.0.0 now
+
+## [0.0.6] - 2018-11-14
 
 * add code document
 

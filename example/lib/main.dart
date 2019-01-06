@@ -215,6 +215,7 @@ class SlideToUnlockPage extends StatelessWidget {
                     ),
                     baseColor: Colors.black12,
                     highlightColor: Colors.white,
+                    loop: 3,
                   ),
                 ),
               ))
