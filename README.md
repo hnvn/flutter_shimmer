@@ -1,6 +1,6 @@
 # Shimmer
 
-[![pub package](https://img.shields.io/pub/v/shimmer.svg)](https://pub.dartlang.org/packages/shimmer) [![Build Status](https://travis-ci.org/hnvn/flutter_shimmer.svg?branch=master)](https://travis-ci.org/hnvn/flutter_shimmer)
+[![pub package](https://img.shields.io/pub/v/shimmer.svg)](https://pub.dartlang.org/packages/shimmer) ![](https://github.com/hnvn/flutter_shimmer/workflows/unit%20test/badge.svg)
 
 A package provides an easy way to add shimmer effect in Flutter project
 
