@@ -44,8 +44,16 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// [loop] the number of animation loop, set value of `0` to make animation run
 /// forever.
 ///
-/// [enabled] controls if shimmer effect is active. When set to false only the
-/// child is visible.
+/// [enabled] controls if shimmer effect is active. When set to false the animation
+/// is paused
+///
+///
+/// ## Pro tips:
+///
+/// * [child] should be made of basic and simple [Widget]s, such as [Container],
+/// [Row] and [Column], to avoid side effect.
+///
+/// * use one [Shimmer] to wrap list of [Widget]s instead of a list of many [Shimmer]s
 ///
 class Shimmer extends StatefulWidget {
   final Widget child;
@@ -194,7 +202,6 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   }
 }
 
-@visibleForTesting
 class _ShimmerFilter extends RenderProxyBox {
   final _clearPaint = Paint();
   final Paint _gradientPaint;
@@ -225,38 +232,34 @@ class _ShimmerFilter extends RenderProxyBox {
       context.canvas.saveLayer(offset & child.size, _clearPaint);
       context.paintChild(child, offset);
 
-      if (enabled) {
-        final width = child.size.width;
-        final height = child.size.height;
-        Rect rect;
-        double dx, dy;
-        if (_direction == ShimmerDirection.rtl) {
-          dx = _offset(width, -width, _percent);
-          dy = 0.0;
-          rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
-        } else if (_direction == ShimmerDirection.ttb) {
-          dx = 0.0;
-          dy = _offset(-height, height, _percent);
-          rect =
-              Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
-        } else if (_direction == ShimmerDirection.btt) {
-          dx = 0.0;
-          dy = _offset(height, -height, _percent);
-          rect =
-              Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
-        } else {
-          dx = _offset(-width, width, _percent);
-          dy = 0.0;
-          rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
-        }
-        if (_rect != rect) {
-          _gradientPaint.shader = _gradient.createShader(rect);
-          _rect = rect;
-        }
-        context.canvas.translate(dx, dy);
-        context.canvas.drawRect(rect, _gradientPaint);
-        context.canvas.restore();
+      final width = child.size.width;
+      final height = child.size.height;
+      Rect rect;
+      double dx, dy;
+      if (_direction == ShimmerDirection.rtl) {
+        dx = _offset(width, -width, _percent);
+        dy = 0.0;
+        rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
+      } else if (_direction == ShimmerDirection.ttb) {
+        dx = 0.0;
+        dy = _offset(-height, height, _percent);
+        rect = Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
+      } else if (_direction == ShimmerDirection.btt) {
+        dx = 0.0;
+        dy = _offset(height, -height, _percent);
+        rect = Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
+      } else {
+        dx = _offset(-width, width, _percent);
+        dy = 0.0;
+        rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
       }
+      if (_rect != rect) {
+        _gradientPaint.shader = _gradient.createShader(rect);
+        _rect = rect;
+      }
+      context.canvas.translate(dx, dy);
+      context.canvas.drawRect(rect, _gradientPaint);
+      context.canvas.restore();
     }
   }
 

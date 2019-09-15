@@ -1,3 +1,7 @@
+## [1.0.1] - 2019-09-15
+
+* support stop and resume animation
+
 ## [1.0.0] - 2019-01-06
 
 * support animation loop control
