@@ -47,6 +47,8 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// [enabled] controls if shimmer effect is active. When set to false the animation
 /// is paused
 ///
+/// [blendMode] determines how the shimmer effect is painted.
+///
 ///
 /// ## Pro tips:
 ///
@@ -62,6 +64,7 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final int loop;
   final bool enabled;
+  final BlendMode blendMode;
 
   Shimmer({
     Key key,
@@ -71,6 +74,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.blendMode = BlendMode.srcIn,
   }) : super(key: key);
 
   ///
@@ -87,6 +91,7 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.blendMode = BlendMode.srcIn,
   })  : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -165,6 +170,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         gradient: widget.gradient,
         percent: _controller.value,
         enabled: widget.enabled,
+        blendMode: widget.blendMode,
       ),
     );
   }
@@ -181,6 +187,7 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   final ShimmerDirection direction;
   final Gradient gradient;
   final bool enabled;
+  final BlendMode blendMode;
 
   _Shimmer({
     Widget child,
@@ -188,11 +195,12 @@ class _Shimmer extends SingleChildRenderObjectWidget {
     this.direction,
     this.gradient,
     this.enabled,
+    this.blendMode,
   }) : super(child: child);
 
   @override
   _ShimmerFilter createRenderObject(BuildContext context) {
-    return _ShimmerFilter(percent, direction, gradient, enabled);
+    return _ShimmerFilter(percent, direction, gradient, enabled, blendMode);
   }
 
   @override
@@ -207,12 +215,18 @@ class _ShimmerFilter extends RenderProxyBox {
   final Paint _gradientPaint;
   final Gradient _gradient;
   final ShimmerDirection _direction;
+  final BlendMode blendMode;
   bool enabled;
   double _percent;
   Rect _rect;
 
-  _ShimmerFilter(this._percent, this._direction, this._gradient, this.enabled)
-      : _gradientPaint = Paint()..blendMode = BlendMode.srcIn;
+  _ShimmerFilter(
+    this._percent,
+    this._direction,
+    this._gradient,
+    this.enabled,
+    this.blendMode,
+  ) : _gradientPaint = Paint()..blendMode = blendMode;
 
   @override
   bool get alwaysNeedsCompositing => child != null;
