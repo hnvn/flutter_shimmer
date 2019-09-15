@@ -226,7 +226,7 @@ class _ShimmerFilter extends RenderProxyBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (child != null) {
+    if (child != null && !offset.dx.isNaN && !offset.dy.isNaN) {
       assert(needsCompositing);
 
       context.canvas.saveLayer(offset & child.size, _clearPaint);
