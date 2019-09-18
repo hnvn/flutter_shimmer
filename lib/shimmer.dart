@@ -229,37 +229,43 @@ class _ShimmerFilter extends RenderProxyBox {
     if (child != null) {
       assert(needsCompositing);
 
-      context.canvas.saveLayer(offset & child.size, _clearPaint);
-      context.paintChild(child, offset);
+      if (enabled) {
+        context.canvas.saveLayer(offset & child.size, _clearPaint);
+        context.paintChild(child, offset);
 
-      final width = child.size.width;
-      final height = child.size.height;
-      Rect rect;
-      double dx, dy;
-      if (_direction == ShimmerDirection.rtl) {
-        dx = _offset(width, -width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
-      } else if (_direction == ShimmerDirection.ttb) {
-        dx = 0.0;
-        dy = _offset(-height, height, _percent);
-        rect = Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
-      } else if (_direction == ShimmerDirection.btt) {
-        dx = 0.0;
-        dy = _offset(height, -height, _percent);
-        rect = Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
+        final width = child.size.width;
+        final height = child.size.height;
+        Rect rect;
+        double dx, dy;
+        if (_direction == ShimmerDirection.rtl) {
+          dx = _offset(width, -width, _percent);
+          dy = 0.0;
+          rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
+        } else if (_direction == ShimmerDirection.ttb) {
+          dx = 0.0;
+          dy = _offset(-height, height, _percent);
+          rect =
+              Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
+        } else if (_direction == ShimmerDirection.btt) {
+          dx = 0.0;
+          dy = _offset(height, -height, _percent);
+          rect =
+              Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
+        } else {
+          dx = _offset(-width, width, _percent);
+          dy = 0.0;
+          rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
+        }
+        if (_rect != rect) {
+          _gradientPaint.shader = _gradient.createShader(rect);
+          _rect = rect;
+        }
+        context.canvas.translate(dx, dy);
+        context.canvas.drawRect(rect, _gradientPaint);
+        context.canvas.restore();
       } else {
-        dx = _offset(-width, width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
+        context.paintChild(child, offset);
       }
-      if (_rect != rect) {
-        _gradientPaint.shader = _gradient.createShader(rect);
-        _rect = rect;
-      }
-      context.canvas.translate(dx, dy);
-      context.canvas.drawRect(rect, _gradientPaint);
-      context.canvas.restore();
     }
   }
 
