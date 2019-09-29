@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Shimmer',
-      routes: {
+      routes: <String, WidgetBuilder>{
         'loading': (_) => LoadingListPage(),
         'slide': (_) => SlideToUnlockPage(),
       },
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -30,16 +30,16 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shimmer'),
+        title: const Text('Shimmer'),
       ),
       body: Column(
-        children: [
+        children: <Widget>[
           ListTile(
-            title: Text('Loading List'),
+            title: const Text('Loading List'),
             onTap: () => Navigator.of(context).pushNamed('loading'),
           ),
           ListTile(
-            title: Text('Slide To Unlock'),
+            title: const Text('Slide To Unlock'),
             onTap: () => Navigator.of(context).pushNamed('slide'),
           ),
         ],
@@ -54,13 +54,13 @@ class LoadingListPage extends StatefulWidget {
 }
 
 class _LoadingListPageState extends State<LoadingListPage> {
-  bool _enabled = true;
+  ShimmerState _currentShimmerState = ShimmerState.running;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Loading List'),
+        title: const Text('Loading List'),
       ),
       body: Container(
         width: double.infinity,
@@ -71,44 +71,43 @@ class _LoadingListPageState extends State<LoadingListPage> {
             Shimmer.fromColors(
               baseColor: Colors.grey[300],
               highlightColor: Colors.grey[100],
-              enabled: _enabled,
+              shimmerState: _currentShimmerState,
               child: Column(
-                children: [0, 1, 2, 3, 4, 5, 6]
+                children: <int>[0, 1, 2, 3, 4, 5, 6]
                     .map((_) => Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: <Widget>[
                               Container(
                                 width: 48.0,
                                 height: 48.0,
                                 color: Colors.white,
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
                               ),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                                  children: <Widget>[
                                     Container(
                                       width: double.infinity,
                                       height: 8.0,
                                       color: Colors.white,
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2.0),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 2.0),
                                     ),
                                     Container(
                                       width: double.infinity,
                                       height: 8.0,
                                       color: Colors.white,
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2.0),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 2.0),
                                     ),
                                     Container(
                                       width: 40.0,
@@ -127,30 +126,48 @@ class _LoadingListPageState extends State<LoadingListPage> {
             Expanded(
               child: Container(),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: FlatButton(
-                  onPressed: () {
-                    setState(() {
-                      _enabled = !_enabled;
-                    });
-                  },
-                  child: Text(
-                    _enabled ? 'Stop' : 'Play',
-                    style: Theme.of(context).textTheme.button.copyWith(
-                        fontSize: 18.0,
-                        color: _enabled ? Colors.redAccent : Colors.green),
-                  )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _buildButtonToggle(() {
+                  setState(() {
+                    _currentShimmerState = ShimmerState.running;
+                  });
+                }, 'Play', Colors.green),
+                _buildButtonToggle(() {
+                  setState(() {
+                    _currentShimmerState = ShimmerState.paused;
+                  });
+                }, 'Pause', Colors.deepOrange),
+                _buildButtonToggle(() {
+                  setState(() {
+                    _currentShimmerState = ShimmerState.stopped;
+                  });
+                }, 'Stop', Colors.red),
+              ],
             )
           ],
         ),
       ),
     );
   }
+
+  Widget _buildButtonToggle(Function action, String text, Color color) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: FlatButton(
+          onPressed: action,
+          child: Text(text,
+              style: Theme.of(context).textTheme.button.copyWith(
+                    fontSize: 18.0,
+                    color: color,
+                  )),
+        ));
+  }
 }
 
 class SlideToUnlockPage extends StatelessWidget {
-  final days = [
+  final List<String> days = <String>[
     'Monday',
     'Tuesday',
     'Wednesday',
@@ -159,7 +176,7 @@ class SlideToUnlockPage extends StatelessWidget {
     'Saturday',
     'Sunday'
   ];
-  final months = [
+  final List<String> months = <String>[
     'January',
     'February',
     'March',
@@ -176,19 +193,19 @@ class SlideToUnlockPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final time = DateTime.now();
-    final hour = time.hour;
-    final minute = time.minute;
-    final day = time.weekday;
-    final month = time.month;
-    final dayInMonth = time.day;
+    final DateTime time = DateTime.now();
+    final int hour = time.hour;
+    final int minute = time.minute;
+    final int day = time.weekday;
+    final int month = time.month;
+    final int dayInMonth = time.day;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Slide To Unlock'),
+        title: const Text('Slide To Unlock'),
       ),
       body: Stack(
         fit: StackFit.expand,
-        children: [
+        children: <Widget>[
           Image.asset(
             'assets/images/background.jpg',
             fit: BoxFit.cover,
@@ -199,7 +216,7 @@ class SlideToUnlockPage extends StatelessWidget {
             left: 0.0,
             child: Center(
               child: Column(
-                children: [
+                children: <Widget>[
                   Text(
                     '${hour < 10 ? '0$hour' : '$hour'}:${minute < 10 ? '0$minute' : '$minute'}',
                     style: TextStyle(
@@ -207,8 +224,8 @@ class SlideToUnlockPage extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.0),
                   ),
                   Text(
                     '${days[day - 1]}, ${months[month - 1]} $dayInMonth',
@@ -228,15 +245,15 @@ class SlideToUnlockPage extends StatelessWidget {
                   child: Shimmer.fromColors(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
+                      children: <Widget>[
                         Image.asset(
                           'assets/images/chevron_right.png',
                           height: 20.0,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4.0),
                         ),
-                        Text(
+                        const Text(
                           'Slide to unlock',
                           style: TextStyle(
                             fontSize: 28.0,

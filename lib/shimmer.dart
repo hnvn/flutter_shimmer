@@ -21,6 +21,19 @@ import 'package:flutter/rendering.dart';
 enum ShimmerDirection { ltr, rtl, ttb, btt }
 
 ///
+/// An enum defines all supported states of shimmer effect
+///
+/// * [ShimmerDirection.running] shimmer effect is presenting and animation is running
+/// * [ShimmerDirection.paused] shimmer effect is presenting and animation is paused
+/// * [ShimmerDirection.stopped] shimmer effect is presenting and animation is paused
+///
+enum ShimmerState {
+  running,
+  paused,
+  stopped,
+}
+
+///
 /// A widget renders shimmer effect over [child] widget tree.
 ///
 /// [child] defines an area that shimmer effect blends on. You can build [child]
@@ -44,9 +57,8 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// [loop] the number of animation loop, set value of `0` to make animation run
 /// forever.
 ///
-/// [enabled] controls if shimmer effect is active. When set to false the animation
-/// is paused
-///
+/// [shimmerState] controls if shimmer effect is active.
+/// The default value is [ShimmerState.running].
 ///
 /// ## Pro tips:
 ///
@@ -60,18 +72,18 @@ class Shimmer extends StatefulWidget {
   final Widget child;
   final Duration period;
   final ShimmerDirection direction;
+  final ShimmerState shimmerState;
   final Gradient gradient;
   final int loop;
-  final bool enabled;
 
   const Shimmer({
     Key key,
     @required this.child,
     @required this.gradient,
     this.direction = ShimmerDirection.ltr,
+    this.shimmerState = ShimmerState.running,
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
-    this.enabled = true,
   }) : super(key: key);
 
   ///
@@ -87,7 +99,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
-    this.enabled = true,
+    this.shimmerState = ShimmerState.running,
   })  : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -118,8 +130,9 @@ class Shimmer extends StatefulWidget {
     properties.add(EnumProperty<ShimmerDirection>('direction', direction));
     properties.add(
         DiagnosticsProperty<Duration>('period', period, defaultValue: null));
-    properties
-        .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
+    properties.add(DiagnosticsProperty<ShimmerState>(
+        'shimmerState', shimmerState,
+        defaultValue: null));
   }
 }
 
@@ -143,33 +156,51 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
           _controller.forward(from: 0.0);
         }
       });
-    if (widget.enabled) {
-      _controller.forward();
+    switch (widget.shimmerState) {
+      case ShimmerState.running:
+        _controller.forward();
+        break;
+      default:
+        break;
     }
   }
 
   @override
   void didUpdateWidget(Shimmer oldWidget) {
-    if (widget.enabled) {
-      _controller.forward();
-    } else {
-      _controller.stop();
+    switch (widget.shimmerState) {
+      case ShimmerState.running:
+        _controller.forward();
+        break;
+      default:
+        _controller.stop();
     }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      child: widget.child,
-      builder: (BuildContext context, Widget child) => _Shimmer(
-        child: child,
-        direction: widget.direction,
-        gradient: widget.gradient,
-        percent: _controller.value,
-        enabled: widget.enabled,
-      ),
+    Widget widgetToDisplay = widget.child;
+    switch (widget.shimmerState) {
+      case ShimmerState.running:
+      case ShimmerState.paused:
+        widgetToDisplay = AnimatedBuilder(
+          animation: _controller,
+          child: widget.child,
+          builder: (BuildContext context, Widget child) => _Shimmer(
+            child: child,
+            direction: widget.direction,
+            gradient: widget.gradient,
+            percent: _controller.value,
+            enabled: widget.shimmerState == ShimmerState.running,
+          ),
+        );
+        break;
+      default:
+        break;
+    }
+    return AnimatedSwitcher(
+      child: widgetToDisplay,
+      duration: const Duration(microseconds: 350),
     );
   }
 
