@@ -23,9 +23,9 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 ///
 /// An enum defines all supported states of shimmer effect
 ///
-/// * [ShimmerDirection.running] shimmer effect is presenting and animation is running
-/// * [ShimmerDirection.paused] shimmer effect is presenting and animation is paused
-/// * [ShimmerDirection.stopped] shimmer effect is presenting and animation is paused
+/// * [ShimmerState.running] shimmer effect is presenting and animation is running
+/// * [ShimmerState.paused] shimmer effect is presenting and animation is paused
+/// * [ShimmerState.stopped] shimmer effect isn't presenting and animation is paused
 ///
 enum ShimmerState {
   running,
@@ -57,7 +57,7 @@ enum ShimmerState {
 /// [loop] the number of animation loop, set value of `0` to make animation run
 /// forever.
 ///
-/// [shimmerState] controls if shimmer effect is active.
+/// [shimmerState] controls if shimmer effect is active/paused/removed.
 /// The default value is [ShimmerState.running].
 ///
 /// ## Pro tips:
