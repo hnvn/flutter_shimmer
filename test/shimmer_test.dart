@@ -3,8 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shimmer/shimmer.dart';
 
 void main() {
-  testWidgets('Shimmer.fromColors() can be constructed',
-      (WidgetTester tester) async {
+  testWidgets('Shimmer.fromColors() can be constructed', (tester) async {
     await tester.pumpWidget(Shimmer.fromColors(
         child: Container(
           width: 100.0,
