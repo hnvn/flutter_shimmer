@@ -68,63 +68,59 @@ class _LoadingListPageState extends State<LoadingListPage> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Shimmer.fromColors(
-              baseColor: Colors.grey[300],
-              highlightColor: Colors.grey[100],
-              enabled: _enabled,
-              child: Column(
-                children: <int>[0, 1, 2, 3, 4, 5, 6]
-                    .map((_) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Row(
+            Expanded(
+              child: Shimmer.fromColors(
+                baseColor: Colors.grey[300],
+                highlightColor: Colors.grey[100],
+                enabled: _enabled,
+                child: ListView.builder(
+                  itemBuilder: (_, __) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 48.0,
+                          height: 48.0,
+                          color: Colors.white,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        ),
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: <Widget>[
                               Container(
-                                width: 48.0,
-                                height: 48.0,
+                                width: double.infinity,
+                                height: 8.0,
                                 color: Colors.white,
                               ),
                               const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: EdgeInsets.symmetric(vertical: 2.0),
                               ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Container(
-                                      width: double.infinity,
-                                      height: 8.0,
-                                      color: Colors.white,
-                                    ),
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 2.0),
-                                    ),
-                                    Container(
-                                      width: double.infinity,
-                                      height: 8.0,
-                                      color: Colors.white,
-                                    ),
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 2.0),
-                                    ),
-                                    Container(
-                                      width: 40.0,
-                                      height: 8.0,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                ),
-                              )
+                              Container(
+                                width: double.infinity,
+                                height: 8.0,
+                                color: Colors.white,
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 2.0),
+                              ),
+                              Container(
+                                width: 40.0,
+                                height: 8.0,
+                                color: Colors.white,
+                              ),
                             ],
                           ),
-                        ))
-                    .toList(),
+                        )
+                      ],
+                    ),
+                  ),
+                  itemCount: 6,
+                ),
               ),
-            ),
-            Expanded(
-              child: Container(),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),

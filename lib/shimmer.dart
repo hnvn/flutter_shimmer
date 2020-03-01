@@ -168,7 +168,6 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         direction: widget.direction,
         gradient: widget.gradient,
         percent: _controller.value,
-        enabled: widget.enabled,
       ),
     );
   }
@@ -185,44 +184,40 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   final double percent;
   final ShimmerDirection direction;
   final Gradient gradient;
-  final bool enabled;
 
   const _Shimmer({
     Widget child,
     this.percent,
     this.direction,
     this.gradient,
-    this.enabled,
   }) : super(child: child);
 
   @override
   _ShimmerFilter createRenderObject(BuildContext context) {
-    return _ShimmerFilter(percent, direction, gradient, enabled);
+    return _ShimmerFilter(percent, direction, gradient);
   }
 
   @override
   void updateRenderObject(BuildContext context, _ShimmerFilter shimmer) {
     shimmer.percent = percent;
-    shimmer.enabled = enabled;
   }
 }
 
 class _ShimmerFilter extends RenderProxyBox {
-  final Paint _clearPaint = Paint();
-  final Paint _gradientPaint;
   final Gradient _gradient;
   final ShimmerDirection _direction;
-  bool enabled;
   double _percent;
-  Rect _rect;
 
-  _ShimmerFilter(this._percent, this._direction, this._gradient, this.enabled)
-      : _gradientPaint = Paint()..blendMode = BlendMode.srcIn;
+  _ShimmerFilter(this._percent, this._direction, this._gradient);
+
+  @override
+  ShaderMaskLayer get layer => super.layer;
 
   @override
   bool get alwaysNeedsCompositing => child != null;
 
   set percent(double newValue) {
+    assert(newValue != null);
     if (newValue == _percent) {
       return;
     }
@@ -232,42 +227,39 @@ class _ShimmerFilter extends RenderProxyBox {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (child == null) {
-      return;
-    }
-    assert(needsCompositing);
+    if (child != null) {
+      assert(needsCompositing);
 
-    context.canvas.saveLayer(offset & child.size, _clearPaint);
-    context.paintChild(child, offset);
-
-    final double width = child.size.width;
-    final double height = child.size.height;
-    Rect rect;
-    double dx, dy;
-    if (_direction == ShimmerDirection.rtl) {
-      dx = _offset(width, -width, _percent);
-      dy = 0.0;
-      rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
-    } else if (_direction == ShimmerDirection.ttb) {
-      dx = 0.0;
-      dy = _offset(-height, height, _percent);
-      rect = Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
-    } else if (_direction == ShimmerDirection.btt) {
-      dx = 0.0;
-      dy = _offset(height, -height, _percent);
-      rect = Rect.fromLTWH(offset.dx, offset.dy - height, width, 3 * height);
+      final double width = child.size.width;
+      final double height = child.size.height;
+      Rect rect;
+      double dx, dy;
+      if (_direction == ShimmerDirection.rtl) {
+        dx = _offset(width, -width, _percent);
+        dy = 0.0;
+        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+      } else if (_direction == ShimmerDirection.ttb) {
+        dx = 0.0;
+        dy = _offset(-height, height, _percent);
+        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
+      } else if (_direction == ShimmerDirection.btt) {
+        dx = 0.0;
+        dy = _offset(height, -height, _percent);
+        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
+      } else {
+        dx = _offset(-width, width, _percent);
+        dy = 0.0;
+        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+      }
+      layer ??= ShaderMaskLayer();
+      layer
+        ..shader = _gradient.createShader(rect)
+        ..maskRect = offset & size
+        ..blendMode = BlendMode.srcIn;
+      context.pushLayer(layer, super.paint, offset);
     } else {
-      dx = _offset(-width, width, _percent);
-      dy = 0.0;
-      rect = Rect.fromLTWH(offset.dx - width, offset.dy, 3 * width, height);
+      layer = null;
     }
-    if (_rect != rect) {
-      _gradientPaint.shader = _gradient.createShader(rect);
-      _rect = rect;
-    }
-    context.canvas.translate(dx, dy);
-    context.canvas.drawRect(rect, _gradientPaint);
-    context.canvas.restore();
   }
 
   double _offset(double start, double end, double percent) {
