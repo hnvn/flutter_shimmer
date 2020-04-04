@@ -200,11 +200,12 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   @override
   void updateRenderObject(BuildContext context, _ShimmerFilter shimmer) {
     shimmer.percent = percent;
+    shimmer.gradient = gradient;
   }
 }
 
 class _ShimmerFilter extends RenderProxyBox {
-  final Gradient _gradient;
+  Gradient _gradient;
   final ShimmerDirection _direction;
   double _percent;
 
@@ -222,6 +223,15 @@ class _ShimmerFilter extends RenderProxyBox {
       return;
     }
     _percent = newValue;
+    markNeedsPaint();
+  }
+
+  set gradient(Gradient newValue) {
+    assert(newValue != null);
+    if (newValue == _gradient) {
+      return;
+    }
+    _gradient = newValue;
     markNeedsPaint();
   }
 
