@@ -205,8 +205,9 @@ class _Shimmer extends SingleChildRenderObjectWidget {
 }
 
 class _ShimmerFilter extends RenderProxyBox {
-  Gradient _gradient;
   final ShimmerDirection _direction;
+
+  Gradient _gradient;
   double _percent;
 
   _ShimmerFilter(this._percent, this._direction, this._gradient);

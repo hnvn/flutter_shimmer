@@ -1,3 +1,7 @@
+## [1.1.1] - 2020-04-05
+
+* support dynamic `Gradient` according to the application's `Theme`
+
 ## [1.1.0] - 2020-03-01
 
 * improved by using `ShaderMaskLayer`
