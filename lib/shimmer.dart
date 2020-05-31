@@ -47,6 +47,9 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// [enabled] controls if shimmer effect is active. When set to false the animation
 /// is paused
 ///
+/// [slanted] controls if shimmer effect is slanted or straight. When set to false,
+/// the effect plays horizontally if direction is ShimmerDirection.ltr or ShimmerDirection.rtl,
+/// or else, the effect plays vertically if direction is ShimmerDirection.ttb or ShimmerDirection.btt
 ///
 /// ## Pro tips:
 ///
