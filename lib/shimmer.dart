@@ -63,6 +63,7 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final int loop;
   final bool enabled;
+  final bool slanted;
 
   const Shimmer({
     Key? key,
@@ -72,6 +73,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.slanted = true,
   }) : super(key: key);
 
   ///
@@ -88,9 +90,20 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.slanted = true,
   })  : gradient = LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.centerRight,
+            begin: slanted
+              ? Alignment.topLeft
+              : direction == ShimmerDirection.ltr ||
+                    direction == ShimmerDirection.rtl
+                ? Alignment.centerLeft
+                : Alignment.topCenter,
+            end: slanted
+              ? Alignment.centerRight
+              : direction == ShimmerDirection.ltr ||
+                    direction == ShimmerDirection.rtl
+                ? Alignment.centerRight
+                : Alignment.bottomCenter,
             colors: <Color>[
               baseColor,
               baseColor,
@@ -143,9 +156,9 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
           _controller.forward(from: 0.0);
         }
       });
-    if (widget.enabled) {
-      _controller.forward();
-    }
+      if (widget.enabled) {
+        _controller.forward();
+      }
   }
 
   @override
