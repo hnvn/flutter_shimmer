@@ -263,21 +263,21 @@ class _ShimmerFilter extends RenderProxyBox {
         dy = _offset(height, -height, _percent);
         rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
       } else if (_direction == ShimmerDirection.blttr) {
-        dx = _offset(width, -width, _percent);
-        dy = _offset(height, height, _percent);
-        rect = Rect.fromLTWH(dx - width, dy - height, 3 * width, 3 * height);
+        dx = _offset(width, -width, _percent * 2);
+        dy = _offset(height, -height, _percent * 2);
+        rect = Rect.fromLTWH(width, dy - height, -3 * width, 6 * height);
       } else if (_direction == ShimmerDirection.brttl) {
-        dx = _offset(width, -width, _percent);
-        dy = _offset(height, -height, _percent);
+        dx = _offset(width, -width, _percent * 1.5);
+        dy = _offset(height, -height, _percent * 1.5);
         rect = Rect.fromLTWH(dx - width, dy - height, 4 * width, 6 * height);
       } else if (_direction == ShimmerDirection.tltbr) {
-        dx = _offset(-width, width, _percent);
-        dy = _offset(-height, height, _percent);
-        rect = Rect.fromLTWH(dx - width, dy - height, 4 * width, 6 * height);
+        dx = _offset(-width, width, _percent * 1.5);
+        dy = _offset(-height, height, _percent * 1.5);
+        rect = Rect.fromLTWH(dx - width, dy - height, 2 * width, 4 * height);
       } else if (_direction == ShimmerDirection.trtbl) {
-        dx = _offset(width, -width, _percent);
-        dy = _offset(-height, height, _percent);
-        rect = Rect.fromLTWH(dx - width, dy, 3 * width, -2 * height);
+        dx = _offset(width, -width, _percent * 1.5);
+        dy = _offset(-height, height, _percent * 1.5);
+        rect = Rect.fromLTWH(dx - width, height, 3 * width, -4 * height);
       } else {
         dx = _offset(-width, width, _percent);
         dy = 0.0;
