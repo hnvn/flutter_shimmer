@@ -18,7 +18,12 @@ import 'package:flutter/rendering.dart';
 /// * [ShimmerDirection.ttb] top to bottom direction
 /// * [ShimmerDirection.btt] bottom to top direction
 ///
-enum ShimmerDirection { ltr, rtl, ttb, btt }
+/// * [ShimmerDirection.blttr] bottomLeft to topRight direction
+/// * [ShimmerDirection.brttl] bottomRight to topLeft direction
+/// * [ShimmerDirection.tltbr] topLeft to bottomRight direction
+/// * [ShimmerDirection.trtbl] topRight to BottomLeft direction
+///
+enum ShimmerDirection { ltr, rtl, ttb, btt, blttr, brttl, tltbr, trtbl }
 
 ///
 /// A widget renders shimmer effect over [child] widget tree.
@@ -257,6 +262,22 @@ class _ShimmerFilter extends RenderProxyBox {
         dx = 0.0;
         dy = _offset(height, -height, _percent);
         rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
+      } else if (_direction == ShimmerDirection.blttr) {
+        dx = _offset(width, -width, _percent);
+        dy = _offset(height, height, _percent);
+        rect = Rect.fromLTWH(dx - width, dy - height, 3 * width, 3 * height);
+      } else if (_direction == ShimmerDirection.brttl) {
+        dx = _offset(width, -width, _percent);
+        dy = _offset(height, -height, _percent);
+        rect = Rect.fromLTWH(dx - width, dy - height, 4 * width, 6 * height);
+      } else if (_direction == ShimmerDirection.tltbr) {
+        dx = _offset(-width, width, _percent);
+        dy = _offset(-height, height, _percent);
+        rect = Rect.fromLTWH(dx - width, dy - height, 4 * width, 6 * height);
+      } else if (_direction == ShimmerDirection.trtbl) {
+        dx = _offset(width, -width, _percent);
+        dy = _offset(-height, height, _percent);
+        rect = Rect.fromLTWH(dx - width, dy, 3 * width, -2 * height);
       } else {
         dx = _offset(-width, width, _percent);
         dy = 0.0;
