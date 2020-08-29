@@ -1,3 +1,11 @@
+## [1.1.1] - 2020-04-05
+
+* support dynamic `Gradient` according to the application's `Theme`
+
+## [1.1.0] - 2020-03-01
+
+* improved by using `ShaderMaskLayer`
+
 ## [1.0.1] - 2019-09-15
 
 * support stop and resume animation
