@@ -224,9 +224,8 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   }) : super(child: child);
 
   @override
-  _ShimmerFilter createRenderObject(BuildContext context) {
-    return _ShimmerFilter(percent, direction, gradient);
-  }
+  _ShimmerFilter createRenderObject(BuildContext context) =>
+      _ShimmerFilter(percent, direction, gradient);
 
   @override
   void updateRenderObject(BuildContext context, _ShimmerFilter shimmer) {
@@ -304,7 +303,6 @@ class _ShimmerFilter extends RenderProxyBox {
     }
   }
 
-  double _offset(double start, double end, double percent) {
-    return start + (end - start) * percent;
-  }
+  double _offset(double start, double end, double percent) =>
+      start + (end - start) * percent;
 }
