@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Shimmer',
-      routes: {
+      routes: <String, WidgetBuilder>{
         'loading': (_) => LoadingListPage(),
         'slide': (_) => SlideToUnlockPage(),
       },
@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Shimmer'),
       ),
       body: Column(
-        children: [
+        children: <Widget>[
           ListTile(
             title: const Text('Loading List'),
             onTap: () => Navigator.of(context).pushNamed('loading'),
@@ -54,7 +54,7 @@ class LoadingListPage extends StatefulWidget {
 }
 
 class _LoadingListPageState extends State<LoadingListPage> {
-  bool _enabled = true;
+  ShimmerState _currentShimmerState = ShimmerState.running;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class _LoadingListPageState extends State<LoadingListPage> {
               child: Shimmer.fromColors(
                 baseColor: Colors.grey[300],
                 highlightColor: Colors.grey[100],
-                enabled: _enabled,
+                shimmerState: _currentShimmerState,
                 child: ListView.builder(
                   itemBuilder: (_, __) => Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
@@ -122,25 +122,46 @@ class _LoadingListPageState extends State<LoadingListPage> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: FlatButton(
-                  onPressed: () {
-                    setState(() {
-                      _enabled = !_enabled;
-                    });
-                  },
-                  child: Text(
-                    _enabled ? 'Stop' : 'Play',
-                    style: Theme.of(context).textTheme.button.copyWith(
-                        fontSize: 18.0,
-                        color: _enabled ? Colors.redAccent : Colors.green),
-                  )),
+            Expanded(
+              child: Container(),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _buildButtonToggle(() {
+                  setState(() {
+                    _currentShimmerState = ShimmerState.running;
+                  });
+                }, 'Play', Colors.green),
+                _buildButtonToggle(() {
+                  setState(() {
+                    _currentShimmerState = ShimmerState.paused;
+                  });
+                }, 'Pause', Colors.deepOrange),
+                _buildButtonToggle(() {
+                  setState(() {
+                    _currentShimmerState = ShimmerState.stopped;
+                  });
+                }, 'Stop', Colors.red),
+              ],
             )
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildButtonToggle(Function action, String text, Color color) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: FlatButton(
+          onPressed: action,
+          child: Text(text,
+              style: Theme.of(context).textTheme.button.copyWith(
+                    fontSize: 18.0,
+                    color: color,
+                  )),
+        ));
   }
 }
 
@@ -183,7 +204,7 @@ class SlideToUnlockPage extends StatelessWidget {
       ),
       body: Stack(
         fit: StackFit.expand,
-        children: [
+        children: <Widget>[
           Image.asset(
             'assets/images/background.jpg',
             fit: BoxFit.cover,

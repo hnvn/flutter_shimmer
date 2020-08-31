@@ -9,6 +9,7 @@ library shimmer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shimmer/animation_controller_factory.dart';
 
 ///
 /// An enum defines all supported directions of shimmer effect
@@ -19,6 +20,19 @@ import 'package:flutter/rendering.dart';
 /// * [ShimmerDirection.btt] bottom to top direction
 ///
 enum ShimmerDirection { ltr, rtl, ttb, btt }
+
+///
+/// An enum defines all supported states of shimmer effect
+///
+/// * [ShimmerState.running] shimmer effect is presenting and animation is running
+/// * [ShimmerState.paused] shimmer effect is presenting and animation is paused
+/// * [ShimmerState.stopped] shimmer effect isn't presenting and animation is paused
+///
+enum ShimmerState {
+  running,
+  paused,
+  stopped,
+}
 
 ///
 /// A widget renders shimmer effect over [child] widget tree.
@@ -44,9 +58,8 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// [loop] the number of animation loop, set value of `0` to make animation run
 /// forever.
 ///
-/// [enabled] controls if shimmer effect is active. When set to false the animation
-/// is paused
-///
+/// [shimmerState] controls if shimmer effect is active/paused/removed.
+/// The default value is [ShimmerState.running].
 ///
 /// ## Pro tips:
 ///
@@ -58,21 +71,23 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 @immutable
 class Shimmer extends StatefulWidget {
   final Widget child;
-  final Duration period;
   final ShimmerDirection direction;
+  final ShimmerState shimmerState;
   final Gradient gradient;
   final int loop;
-  final bool enabled;
-
+  final AnimationControllerFactory animationControllerFactory;
   const Shimmer({
     Key key,
+    this.animationControllerFactory = const PackageAnimationControllerFactory(),
     @required this.child,
     @required this.gradient,
     this.direction = ShimmerDirection.ltr,
-    this.period = const Duration(milliseconds: 1500),
+    this.shimmerState = ShimmerState.running,
     this.loop = 0,
-    this.enabled = true,
-  }) : super(key: key);
+  })  : assert(animationControllerFactory != null),
+        assert(child != null),
+        assert(gradient != null),
+        super(key: key);
 
   ///
   /// A convenient constructor provides an easy and convenient way to create a
@@ -81,14 +96,18 @@ class Shimmer extends StatefulWidget {
   ///
   Shimmer.fromColors({
     Key key,
+    this.animationControllerFactory = const PackageAnimationControllerFactory(),
     @required this.child,
     @required Color baseColor,
     @required Color highlightColor,
-    this.period = const Duration(milliseconds: 1500),
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
-    this.enabled = true,
-  })  : gradient = LinearGradient(
+    this.shimmerState = ShimmerState.running,
+  })  : assert(animationControllerFactory != null),
+        assert(child != null),
+        assert(baseColor != null),
+        assert(highlightColor != null),
+        gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
             colors: <Color>[
@@ -108,7 +127,7 @@ class Shimmer extends StatefulWidget {
         super(key: key);
 
   @override
-  _ShimmerState createState() => _ShimmerState();
+  _ShimmerState createState() => _ShimmerState(animationControllerFactory);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -116,10 +135,12 @@ class Shimmer extends StatefulWidget {
     properties.add(DiagnosticsProperty<Gradient>('gradient', gradient,
         defaultValue: null));
     properties.add(EnumProperty<ShimmerDirection>('direction', direction));
-    properties.add(
-        DiagnosticsProperty<Duration>('period', period, defaultValue: null));
-    properties
-        .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
+    properties.add(DiagnosticsProperty<AnimationControllerFactory>(
+        'animationControllerFactory', animationControllerFactory,
+        defaultValue: PackageAnimationControllerFactory));
+    properties.add(DiagnosticsProperty<ShimmerState>(
+        'shimmerState', shimmerState,
+        defaultValue: null));
   }
 }
 
@@ -127,48 +148,73 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   int _count;
 
+  _ShimmerState(AnimationControllerFactory factory) {
+    _controller = factory.controller(this);
+  }
+
   @override
   void initState() {
     super.initState();
     _count = 0;
-    _controller = AnimationController(vsync: this, duration: widget.period)
-      ..addStatusListener((AnimationStatus status) {
-        if (status != AnimationStatus.completed) {
-          return;
-        }
-        _count++;
-        if (widget.loop <= 0) {
-          _controller.repeat();
-        } else if (_count < widget.loop) {
-          _controller.forward(from: 0.0);
-        }
-      });
-    if (widget.enabled) {
-      _controller.forward();
-    }
+    _controller.addStatusListener((AnimationStatus status) {
+      if (status != AnimationStatus.completed) {
+        return;
+      }
+      _count++;
+      if (widget.loop <= 0) {
+        _controller.repeat();
+      } else if (_count < widget.loop) {
+        _controller.forward(from: 0.0);
+      }
+    });
+    _handleChange(widget.shimmerState);
   }
 
   @override
   void didUpdateWidget(Shimmer oldWidget) {
-    if (widget.enabled) {
-      _controller.forward();
-    } else {
-      _controller.stop();
+    if (oldWidget.shimmerState != widget.shimmerState) {
+      _handleChange(widget.shimmerState);
     }
     super.didUpdateWidget(oldWidget);
   }
 
+  void _handleChange(ShimmerState shimmerState) {
+    switch (shimmerState) {
+      case ShimmerState.running:
+        _controller.forward();
+        break;
+      case ShimmerState.stopped:
+        _controller.reset();
+        break;
+      case ShimmerState.paused:
+        _controller.stop();
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      child: widget.child,
-      builder: (BuildContext context, Widget child) => _Shimmer(
-        child: child,
-        direction: widget.direction,
-        gradient: widget.gradient,
-        percent: _controller.value,
-      ),
+    Widget widgetToDisplay = widget.child;
+    switch (widget.shimmerState) {
+      case ShimmerState.running:
+      case ShimmerState.paused:
+        widgetToDisplay = AnimatedBuilder(
+          animation: _controller,
+          child: widget.child,
+          builder: (BuildContext context, Widget child) => _Shimmer(
+            child: child,
+            direction: widget.direction,
+            gradient: widget.gradient,
+            percent: _controller.value,
+          ),
+        );
+        break;
+      default:
+        break;
+    }
+    return AnimatedSwitcher(
+      child: widgetToDisplay,
+      duration: const Duration(microseconds: 350),
     );
   }
 
@@ -193,9 +239,8 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   }) : super(child: child);
 
   @override
-  _ShimmerFilter createRenderObject(BuildContext context) {
-    return _ShimmerFilter(percent, direction, gradient);
-  }
+  _ShimmerFilter createRenderObject(BuildContext context) =>
+      _ShimmerFilter(percent, direction, gradient);
 
   @override
   void updateRenderObject(BuildContext context, _ShimmerFilter shimmer) {
@@ -273,7 +318,6 @@ class _ShimmerFilter extends RenderProxyBox {
     }
   }
 
-  double _offset(double start, double end, double percent) {
-    return start + (end - start) * percent;
-  }
+  double _offset(double start, double end, double percent) =>
+      start + (end - start) * percent;
 }
