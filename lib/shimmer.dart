@@ -9,6 +9,7 @@ library shimmer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shimmer/animation_controller_factory.dart';
 
 ///
 /// An enum defines all supported directions of shimmer effect
@@ -70,21 +71,23 @@ enum ShimmerState {
 @immutable
 class Shimmer extends StatefulWidget {
   final Widget child;
-  final Duration period;
   final ShimmerDirection direction;
   final ShimmerState shimmerState;
   final Gradient gradient;
   final int loop;
-
+  final AnimationControllerFactory animationControllerFactory;
   const Shimmer({
     Key key,
+    this.animationControllerFactory = const PackageAnimationControllerFactory(),
     @required this.child,
     @required this.gradient,
     this.direction = ShimmerDirection.ltr,
     this.shimmerState = ShimmerState.running,
-    this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
-  }) : super(key: key);
+  })  : assert(animationControllerFactory != null),
+        assert(child != null),
+        assert(gradient != null),
+        super(key: key);
 
   ///
   /// A convenient constructor provides an easy and convenient way to create a
@@ -93,14 +96,18 @@ class Shimmer extends StatefulWidget {
   ///
   Shimmer.fromColors({
     Key key,
+    this.animationControllerFactory = const PackageAnimationControllerFactory(),
     @required this.child,
     @required Color baseColor,
     @required Color highlightColor,
-    this.period = const Duration(milliseconds: 1500),
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.shimmerState = ShimmerState.running,
-  })  : gradient = LinearGradient(
+  })  : assert(animationControllerFactory != null),
+        assert(child != null),
+        assert(baseColor != null),
+        assert(highlightColor != null),
+        gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
             colors: <Color>[
@@ -120,7 +127,7 @@ class Shimmer extends StatefulWidget {
         super(key: key);
 
   @override
-  _ShimmerState createState() => _ShimmerState();
+  _ShimmerState createState() => _ShimmerState(animationControllerFactory);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -128,8 +135,9 @@ class Shimmer extends StatefulWidget {
     properties.add(DiagnosticsProperty<Gradient>('gradient', gradient,
         defaultValue: null));
     properties.add(EnumProperty<ShimmerDirection>('direction', direction));
-    properties.add(
-        DiagnosticsProperty<Duration>('period', period, defaultValue: null));
+    properties.add(DiagnosticsProperty<AnimationControllerFactory>(
+        'animationControllerFactory', animationControllerFactory,
+        defaultValue: PackageAnimationControllerFactory));
     properties.add(DiagnosticsProperty<ShimmerState>(
         'shimmerState', shimmerState,
         defaultValue: null));
@@ -140,41 +148,48 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   int _count;
 
+  _ShimmerState(AnimationControllerFactory factory) {
+    _controller = factory.controller(this);
+  }
+
   @override
   void initState() {
     super.initState();
     _count = 0;
-    _controller = AnimationController(vsync: this, duration: widget.period)
-      ..addStatusListener((AnimationStatus status) {
-        if (status != AnimationStatus.completed) {
-          return;
-        }
-        _count++;
-        if (widget.loop <= 0) {
-          _controller.repeat();
-        } else if (_count < widget.loop) {
-          _controller.forward(from: 0.0);
-        }
-      });
-    switch (widget.shimmerState) {
-      case ShimmerState.running:
-        _controller.forward();
-        break;
-      default:
-        break;
-    }
+    _controller.addStatusListener((AnimationStatus status) {
+      if (status != AnimationStatus.completed) {
+        return;
+      }
+      _count++;
+      if (widget.loop <= 0) {
+        _controller.repeat();
+      } else if (_count < widget.loop) {
+        _controller.forward(from: 0.0);
+      }
+    });
+    _handleChange(widget.shimmerState);
   }
 
   @override
   void didUpdateWidget(Shimmer oldWidget) {
-    switch (widget.shimmerState) {
+    if (oldWidget.shimmerState != widget.shimmerState) {
+      _handleChange(widget.shimmerState);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _handleChange(ShimmerState shimmerState) {
+    switch (shimmerState) {
       case ShimmerState.running:
         _controller.forward();
         break;
-      default:
+      case ShimmerState.stopped:
+        _controller.reset();
+        break;
+      case ShimmerState.paused:
         _controller.stop();
+        break;
     }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
