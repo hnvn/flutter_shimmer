@@ -45,7 +45,9 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// forever.
 ///
 /// [enabled] controls if shimmer effect is active. When set to false the animation
-/// is paused
+/// is paused.
+///
+/// [hideOnDisabled] hides the shimmer effect when [enabled] is `false`.
 ///
 ///
 /// ## Pro tips:
@@ -63,6 +65,7 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final int loop;
   final bool enabled;
+  final bool hideOnDisabled;
 
   const Shimmer({
     Key key,
@@ -72,6 +75,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.hideOnDisabled = false,
   }) : super(key: key);
 
   ///
@@ -88,6 +92,7 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.hideOnDisabled = false,
   })  : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -163,12 +168,15 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     return AnimatedBuilder(
       animation: _controller,
       child: widget.child,
-      builder: (BuildContext context, Widget child) => _Shimmer(
-        child: child,
-        direction: widget.direction,
-        gradient: widget.gradient,
-        percent: _controller.value,
-      ),
+      builder: (BuildContext context, Widget child) =>
+          widget.hideOnDisabled && !widget.enabled
+              ? child
+              : _Shimmer(
+                  child: child,
+                  direction: widget.direction,
+                  gradient: widget.gradient,
+                  percent: _controller.value,
+                ),
     );
   }
 
