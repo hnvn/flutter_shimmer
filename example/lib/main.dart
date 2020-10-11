@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ListTile(
             title: const Text('Slide To Unlock'),
             onTap: () => Navigator.of(context).pushNamed('slide'),
-          ),
+          )
         ],
       ),
     );

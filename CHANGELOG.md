@@ -1,3 +1,7 @@
+## [1.1.2] - 2020-10-11
+
+* fix bug: missing update `ShimmerDirection`
+
 ## [1.1.1] - 2020-04-05
 
 * support dynamic `Gradient` according to the application's `Theme`
