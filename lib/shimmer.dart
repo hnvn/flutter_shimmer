@@ -63,6 +63,7 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final int loop;
   final bool enabled;
+  final Curve curve;
 
   const Shimmer({
     Key key,
@@ -72,6 +73,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.curve = Curves.linear,
   }) : super(key: key);
 
   ///
@@ -88,6 +90,7 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.curve =  Curves.linear,
   })  : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -131,7 +134,8 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _count = 0;
-    _controller = AnimationController(vsync: this, duration: widget.period)
+    _controller = AnimationController(vsync: this, duration: widget.period);
+    CurvedAnimation(parent: _controller, curve: widget.curve)
       ..addStatusListener((AnimationStatus status) {
         if (status != AnimationStatus.completed) {
           return;
@@ -286,3 +290,4 @@ class _ShimmerFilter extends RenderProxyBox {
     return start + (end - start) * percent;
   }
 }
+
