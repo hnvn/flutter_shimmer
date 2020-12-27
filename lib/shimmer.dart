@@ -63,7 +63,7 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final int loop;
   final bool enabled;
-
+  final BlendMode blendMode;
   const Shimmer({
     Key key,
     @required this.child,
@@ -72,6 +72,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.blendMode,
   }) : super(key: key);
 
   ///
@@ -88,6 +89,7 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.blendMode,
   })  : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -168,6 +170,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         direction: widget.direction,
         gradient: widget.gradient,
         percent: _controller.value,
+        blendMode: widget.blendMode,
       ),
     );
   }
@@ -184,17 +187,18 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   final double percent;
   final ShimmerDirection direction;
   final Gradient gradient;
-
+  final BlendMode blendMode;
   const _Shimmer({
     Widget child,
     this.percent,
     this.direction,
+    this.blendMode,
     this.gradient,
   }) : super(child: child);
 
   @override
   _ShimmerFilter createRenderObject(BuildContext context) {
-    return _ShimmerFilter(percent, direction, gradient);
+    return _ShimmerFilter(percent, direction, gradient, blendMode);
   }
 
   @override
@@ -209,8 +213,9 @@ class _ShimmerFilter extends RenderProxyBox {
   ShimmerDirection _direction;
   Gradient _gradient;
   double _percent;
-
-  _ShimmerFilter(this._percent, this._direction, this._gradient);
+  BlendMode blendMode;
+  _ShimmerFilter(
+      this._percent, this._direction, this._gradient, this.blendMode);
 
   @override
   ShaderMaskLayer get layer => super.layer;
@@ -275,7 +280,7 @@ class _ShimmerFilter extends RenderProxyBox {
       layer
         ..shader = _gradient.createShader(rect)
         ..maskRect = offset & size
-        ..blendMode = BlendMode.srcIn;
+        ..blendMode = blendMode ?? BlendMode.srcIn;
       context.pushLayer(layer, super.paint, offset);
     } else {
       layer = null;
