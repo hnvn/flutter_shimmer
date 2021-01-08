@@ -59,6 +59,7 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 class Shimmer extends StatefulWidget {
   final Widget child;
   final Duration period;
+  final Duration delay;
   final ShimmerDirection direction;
   final Gradient gradient;
   final int loop;
@@ -70,6 +71,7 @@ class Shimmer extends StatefulWidget {
     @required this.gradient,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
+    this.delay = const Duration(microseconds: 0),
     this.loop = 0,
     this.enabled = true,
   }) : super(key: key);
@@ -85,6 +87,7 @@ class Shimmer extends StatefulWidget {
     @required Color baseColor,
     @required Color highlightColor,
     this.period = const Duration(milliseconds: 1500),
+    this.delay = const Duration(microseconds: 0),
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
@@ -118,6 +121,8 @@ class Shimmer extends StatefulWidget {
     properties.add(EnumProperty<ShimmerDirection>('direction', direction));
     properties.add(
         DiagnosticsProperty<Duration>('period', period, defaultValue: null));
+    properties.add(
+        DiagnosticsProperty<Duration>('delay', delay, defaultValue: null));
     properties
         .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
   }
@@ -132,13 +137,14 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     super.initState();
     _count = 0;
     _controller = AnimationController(vsync: this, duration: widget.period)
-      ..addStatusListener((AnimationStatus status) {
+      ..addStatusListener((AnimationStatus status) async {
         if (status != AnimationStatus.completed) {
           return;
         }
         _count++;
+        await Future<dynamic>.delayed(widget.delay);
         if (widget.loop <= 0) {
-          _controller.repeat();
+          _controller.forward(from: 0.0);
         } else if (_count < widget.loop) {
           _controller.forward(from: 0.0);
         }
