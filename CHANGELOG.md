@@ -1,4 +1,8 @@
 
+## [2.0.0] - 2021-04-12
+
+* stable version of nullsafety
+
 ## [2.0.0-nullsafety.0] - 2021-01-25
 
 * mirgrate to nullsafety
