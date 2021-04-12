@@ -59,6 +59,7 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 class Shimmer extends StatefulWidget {
   final Widget child;
   final Duration period;
+  final Curve curve;
   final ShimmerDirection direction;
   final Gradient gradient;
   final int loop;
@@ -72,6 +73,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.curve = Curves.linear,
   }) : super(key: key);
 
   ///
@@ -88,6 +90,7 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.curve = Curves.linear,
   })  : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -161,7 +164,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _controller,
+      animation: CurvedAnimation(parent: _controller, curve: widget.curve),
       child: widget.child,
       builder: (BuildContext context, Widget? child) => _Shimmer(
         child: child,
