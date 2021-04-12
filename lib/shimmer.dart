@@ -120,6 +120,7 @@ class Shimmer extends StatefulWidget {
         DiagnosticsProperty<Duration>('period', period, defaultValue: null));
     properties
         .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
+    properties.add(DiagnosticsProperty<int>('loop', loop, defaultValue: 0));
   }
 }
 
