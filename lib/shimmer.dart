@@ -125,7 +125,7 @@ class Shimmer extends StatefulWidget {
 }
 
 class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late final AnimationController _controller;
   int _count = 0;
 
   @override
@@ -254,22 +254,27 @@ class _ShimmerFilter extends RenderProxyBox {
       final double height = child!.size.height;
       Rect rect;
       double dx, dy;
-      if (_direction == ShimmerDirection.rtl) {
-        dx = _offset(width, -width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
-      } else if (_direction == ShimmerDirection.ttb) {
-        dx = 0.0;
-        dy = _offset(-height, height, _percent);
-        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
-      } else if (_direction == ShimmerDirection.btt) {
-        dx = 0.0;
-        dy = _offset(height, -height, _percent);
-        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
-      } else {
-        dx = _offset(-width, width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+      switch (_direction) {
+        case ShimmerDirection.ltr:
+          dx = _offset(-width, width, _percent);
+          dy = 0.0;
+          rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+          break;
+        case ShimmerDirection.rtl:
+          dx = _offset(width, -width, _percent);
+          dy = 0.0;
+          rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+          break;
+        case ShimmerDirection.ttb:
+          dx = 0.0;
+          dy = _offset(-height, height, _percent);
+          rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
+          break;
+        case ShimmerDirection.btt:
+          dx = 0.0;
+          dy = _offset(height, -height, _percent);
+          rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
+          break;
       }
       layer ??= ShaderMaskLayer();
       layer!
