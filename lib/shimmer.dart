@@ -118,8 +118,7 @@ class Shimmer extends StatefulWidget {
 
   ///
   /// A convenient constructor provides an easy and convenient way to create a
-  /// [Shimmer] which [gradient] is [LinearGradient] made up of `baseColor` and
-  /// `highlightColor`.
+  /// [Shimmer] which with fadeInFadeOut behavior.
   ///
   Shimmer.fromFade({
     Key? key,
