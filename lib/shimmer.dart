@@ -130,7 +130,7 @@ class Shimmer extends StatefulWidget {
     this.loop = 0,
     this.enabled = true,
     this.mode = ShimmerMode.fade,
-    this.minFadeValue = 0.0,
+    this.minFadeValue = 0.1,
     this.curve = Curves.linear
   })  : gradient = LinearGradient(
       begin: Alignment.topLeft,
