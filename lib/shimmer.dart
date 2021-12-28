@@ -71,7 +71,7 @@ class Shimmer extends StatefulWidget {
     required this.gradient,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
-    this.delay = const Duration(microseconds: 0),
+    this.delay = Duration.zero,
     this.loop = 0,
     this.enabled = true,
   }) : super(key: key);
@@ -87,7 +87,7 @@ class Shimmer extends StatefulWidget {
     required Color baseColor,
     required Color highlightColor,
     this.period = const Duration(milliseconds: 1500),
-    this.delay = const Duration(microseconds: 0),
+    this.delay = Duration.zero,
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
@@ -121,8 +121,8 @@ class Shimmer extends StatefulWidget {
     properties.add(EnumProperty<ShimmerDirection>('direction', direction));
     properties.add(
         DiagnosticsProperty<Duration>('period', period, defaultValue: null));
-    properties.add(
-        DiagnosticsProperty<Duration>('delay', delay, defaultValue: null));
+    properties
+        .add(DiagnosticsProperty<Duration>('delay', delay, defaultValue: null));
     properties
         .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
     properties.add(DiagnosticsProperty<int>('loop', loop, defaultValue: 0));
@@ -144,6 +144,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         _count++;
         await Future<dynamic>.delayed(widget.delay);
         if (!mounted) {
+          // if the widget was unmounted during the delay period
           return;
         }
         if (widget.loop <= 0) {
