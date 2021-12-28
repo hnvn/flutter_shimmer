@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Shimmer',
-      routes: {
+      routes: <String, WidgetBuilder>{
         'loading': (_) => LoadingListPage(),
         'slide': (_) => SlideToUnlockPage(),
       },
@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Shimmer'),
       ),
       body: Column(
-        children: [
+        children: <Widget>[
           ListTile(
             title: const Text('Loading List'),
             onTap: () => Navigator.of(context).pushNamed('loading'),
@@ -78,7 +78,7 @@ class _LoadingListPageState extends State<LoadingListPage> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Container(
                           width: 48.0,
                           height: 48.0,
@@ -183,7 +183,7 @@ class SlideToUnlockPage extends StatelessWidget {
       ),
       body: Stack(
         fit: StackFit.expand,
-        children: [
+        children: <Widget>[
           Image.asset(
             'assets/images/background.jpg',
             fit: BoxFit.cover,
@@ -197,7 +197,7 @@ class SlideToUnlockPage extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     '${hour < 10 ? '0$hour' : '$hour'}:${minute < 10 ? '0$minute' : '$minute'}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 60.0,
                       color: Colors.white,
                     ),
@@ -207,7 +207,7 @@ class SlideToUnlockPage extends StatelessWidget {
                   ),
                   Text(
                     '${days[day - 1]}, ${months[month - 1]} $dayInMonth',
-                    style: TextStyle(fontSize: 24.0, color: Colors.white),
+                    style: const TextStyle(fontSize: 24.0, color: Colors.white),
                   )
                 ],
               ),
