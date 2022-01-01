@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CircleListItem extends StatelessWidget {
   final double size;
 
-  const CircleListItem({Key key, this.size = 80}) : super(key: key);
+  const CircleListItem({Key? key, this.size = 80}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

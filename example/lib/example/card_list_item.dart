@@ -3,7 +3,7 @@ import 'package:shimmer_example/example/circle_list_item.dart';
 
 class CardListItem extends StatelessWidget {
   const CardListItem({
-    Key key,
+    Key? key,
     this.isLoading = true,
   }) : super(key: key);
 

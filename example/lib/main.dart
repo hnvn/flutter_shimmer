@@ -70,8 +70,8 @@ class _LoadingListPageState extends State<LoadingListPage> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Shimmer.fromColors(
-            baseColor: Colors.grey[300],
-            highlightColor: Colors.grey[100],
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
             enabled: _enabled,
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
