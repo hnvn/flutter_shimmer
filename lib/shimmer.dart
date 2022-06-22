@@ -7,6 +7,8 @@
 
 library shimmer;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -36,6 +38,10 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// [period] controls the speed of shimmer effect. The default value is 1500
 /// milliseconds.
 ///
+///
+/// [repeatDelay] controls the delay when repeat shimmer effect. The default value is zero
+/// milliseconds.
+///
 /// [direction] controls the direction of shimmer effect. The default value
 /// is [ShimmerDirection.ltr].
 ///
@@ -59,6 +65,7 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 class Shimmer extends StatefulWidget {
   final Widget child;
   final Duration period;
+  final Duration repeatDelay;
   final ShimmerDirection direction;
   final Gradient gradient;
   final int loop;
@@ -70,6 +77,7 @@ class Shimmer extends StatefulWidget {
     required this.gradient,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
+    this.repeatDelay = Duration.zero,
     this.loop = 0,
     this.enabled = true,
   }) : super(key: key);
@@ -85,6 +93,7 @@ class Shimmer extends StatefulWidget {
     required Color baseColor,
     required Color highlightColor,
     this.period = const Duration(milliseconds: 1500),
+    this.repeatDelay = Duration.zero,
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
@@ -118,6 +127,8 @@ class Shimmer extends StatefulWidget {
     properties.add(EnumProperty<ShimmerDirection>('direction', direction));
     properties.add(
         DiagnosticsProperty<Duration>('period', period, defaultValue: null));
+    properties.add(DiagnosticsProperty<Duration>('repeatDelay', repeatDelay,
+        defaultValue: null));
     properties
         .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
     properties.add(DiagnosticsProperty<int>('loop', loop, defaultValue: 0));
@@ -127,6 +138,7 @@ class Shimmer extends StatefulWidget {
 class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int _count = 0;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -137,10 +149,11 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
           return;
         }
         _count++;
-        if (widget.loop <= 0) {
-          _controller.repeat();
-        } else if (_count < widget.loop) {
-          _controller.forward(from: 0.0);
+        if (widget.loop <= 0 || _count < widget.loop) {
+          _timer = Timer(
+            widget.repeatDelay,
+            () => _controller.forward(from: 0.0),
+          );
         }
       });
     if (widget.enabled) {
@@ -175,6 +188,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     _controller.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 }
