@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shimmer_example/example/circle_list_item.dart';
-
-import 'example/card_list_item.dart';
-import 'example/label_shimmer.dart';
+import 'package:shimmer_example/placeholders.dart';
 
 void main() => runApp(MyApp());
 
@@ -36,17 +33,20 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Shimmer'),
       ),
-      body: Column(
-        children: <Widget>[
-          ListTile(
-            title: const Text('Loading List'),
-            onTap: () => Navigator.of(context).pushNamed('loading'),
-          ),
-          ListTile(
-            title: const Text('Slide To Unlock'),
-            onTap: () => Navigator.of(context).pushNamed('slide'),
-          )
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              title: const Text('Loading List'),
+              onTap: () => Navigator.of(context).pushNamed('loading'),
+            ),
+            ListTile(
+              title: const Text('Slide To Unlock'),
+              onTap: () => Navigator.of(context).pushNamed('slide'),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -66,68 +66,37 @@ class _LoadingListPageState extends State<LoadingListPage> {
       appBar: AppBar(
         title: const Text('Loading List'),
       ),
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.grey.shade100,
-            enabled: _enabled,
-            child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  const LabelShimmer(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    child: ListView.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        return const CircleListItem();
-                      },
-                      itemCount: 6,
-                      scrollDirection: Axis.horizontal,
-                    ),
-                    height: 80,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const LabelShimmer(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const CardListItem(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const LabelShimmer(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(maxHeight: 400, minHeight: 56.0),
-                    child: ListView.builder(
-                      itemBuilder: (BuildContext context, int index) {
-                        return const CardListItem();
-                      },
-                      shrinkWrap: true,
-                      itemCount: 3,
-                      scrollDirection: Axis.vertical,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const LabelShimmer(),
-                ],
-              ),
-            )),
-      ),
+      body: Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          enabled: _enabled,
+          child: SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const BannerPlaceholder(),
+                const TitlePlaceholder(width: double.infinity),
+                const SizedBox(height: 16.0),
+                const ContentPlaceholder(
+                  lineType: ContentLineType.thressLines,
+                ),
+                const SizedBox(height: 16.0),
+                const TitlePlaceholder(width: 200.0),
+                const SizedBox(height: 16.0),
+                const ContentPlaceholder(
+                  lineType: ContentLineType.twoLines,
+                ),
+                const SizedBox(height: 16.0),
+                const TitlePlaceholder(width: 200.0),
+                const SizedBox(height: 16.0),
+                const ContentPlaceholder(
+                  lineType: ContentLineType.twoLines,
+                ),
+              ],
+            ),
+          )),
     );
   }
 }
@@ -202,7 +171,7 @@ class SlideToUnlockPage extends StatelessWidget {
             ),
           ),
           Positioned(
-              bottom: 24.0,
+              bottom: 32.0,
               left: 0.0,
               right: 0.0,
               child: Center(
@@ -229,7 +198,6 @@ class SlideToUnlockPage extends StatelessWidget {
                     ),
                     baseColor: Colors.black12,
                     highlightColor: Colors.white,
-                    loop: 3,
                   ),
                 ),
               ))
