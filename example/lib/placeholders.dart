@@ -52,7 +52,7 @@ class TitlePlaceholder extends StatelessWidget {
 
 enum ContentLineType {
   twoLines,
-  thressLines,
+  threeLines,
 }
 
 class ContentPlaceholder extends StatelessWidget {
@@ -91,7 +91,7 @@ class ContentPlaceholder extends StatelessWidget {
                   color: Colors.white,
                   margin: const EdgeInsets.only(bottom: 8.0),
                 ),
-                if (lineType == ContentLineType.thressLines)
+                if (lineType == ContentLineType.threeLines)
                   Container(
                     width: double.infinity,
                     height: 10.0,

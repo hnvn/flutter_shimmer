@@ -80,7 +80,7 @@ class _LoadingListPageState extends State<LoadingListPage> {
                 const TitlePlaceholder(width: double.infinity),
                 const SizedBox(height: 16.0),
                 const ContentPlaceholder(
-                  lineType: ContentLineType.thressLines,
+                  lineType: ContentLineType.threeLines,
                 ),
                 const SizedBox(height: 16.0),
                 const TitlePlaceholder(width: 200.0),
