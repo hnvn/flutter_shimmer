@@ -63,6 +63,9 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final int loop;
   final bool enabled;
+  final ShimmerMode mode;
+  final double minFadeValue;
+  final Curve curve;
 
   const Shimmer({
     Key? key,
@@ -72,6 +75,9 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.mode = ShimmerMode.gradient,
+    this.minFadeValue = 0.0,
+    this.curve = Curves.linear
   }) : super(key: key);
 
   ///
@@ -88,6 +94,9 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.mode = ShimmerMode.gradient,
+    this.minFadeValue = 0.0,
+    this.curve = Curves.linear
   })  : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -105,6 +114,32 @@ class Shimmer extends StatefulWidget {
               0.65,
               1.0
             ]),
+        super(key: key);
+
+  ///
+  /// A convenient constructor provides an easy and convenient way to create a
+  /// [Shimmer] which with fadeInFadeOut behavior.
+  ///
+  Shimmer.fromFade({
+    Key? key,
+    required this.child,
+    required Color color,
+    this.period = const Duration(milliseconds: 1500),
+    this.direction = ShimmerDirection.ltr,
+    this.loop = 0,
+    this.enabled = true,
+    this.mode = ShimmerMode.fade,
+    this.minFadeValue = 0.1,
+    this.curve = Curves.linear
+  })  : gradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.centerRight,
+      colors: <Color>[
+        color,
+      ],
+      stops: const <double>[
+        1.0
+      ]),
         super(key: key);
 
   @override
@@ -126,6 +161,7 @@ class Shimmer extends StatefulWidget {
 
 class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation _animation;
   int _count = 0;
 
   @override
@@ -138,11 +174,18 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         }
         _count++;
         if (widget.loop <= 0) {
-          _controller.repeat();
+          _controller.repeat(reverse: widget.mode == ShimmerMode.fade);
         } else if (_count < widget.loop) {
           _controller.forward(from: 0.0);
         }
       });
+    _animation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+        parent: _controller,
+        curve: widget.curve
+    ));
     if (widget.enabled) {
       _controller.forward();
     }
@@ -161,13 +204,15 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _controller,
+      animation: _animation,
       child: widget.child,
       builder: (BuildContext context, Widget? child) => _Shimmer(
         child: child,
         direction: widget.direction,
         gradient: widget.gradient,
         percent: _controller.value,
+        mode: widget.mode,
+        minFadeValue: widget.minFadeValue,
       ),
     );
   }
@@ -184,17 +229,21 @@ class _Shimmer extends SingleChildRenderObjectWidget {
   final double percent;
   final ShimmerDirection direction;
   final Gradient gradient;
+  final ShimmerMode mode;
+  final double minFadeValue;
 
   const _Shimmer({
     Widget? child,
     required this.percent,
     required this.direction,
     required this.gradient,
+    required this.mode,
+    required this.minFadeValue,
   }) : super(child: child);
 
   @override
   _ShimmerFilter createRenderObject(BuildContext context) {
-    return _ShimmerFilter(percent, direction, gradient);
+    return _ShimmerFilter(percent, direction, gradient,mode,minFadeValue);
   }
 
   @override
@@ -209,8 +258,10 @@ class _ShimmerFilter extends RenderProxyBox {
   ShimmerDirection _direction;
   Gradient _gradient;
   double _percent;
+  ShimmerMode mode;
+  double minFadeValue;
 
-  _ShimmerFilter(this._percent, this._direction, this._gradient);
+  _ShimmerFilter(this._percent, this._direction, this._gradient,this.mode,this.minFadeValue);
 
   @override
   ShaderMaskLayer? get layer => super.layer as ShaderMaskLayer?;
@@ -249,31 +300,46 @@ class _ShimmerFilter extends RenderProxyBox {
 
       final double width = child!.size.width;
       final double height = child!.size.height;
-      Rect rect;
-      double dx, dy;
-      if (_direction == ShimmerDirection.rtl) {
-        dx = _offset(width, -width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
-      } else if (_direction == ShimmerDirection.ttb) {
-        dx = 0.0;
-        dy = _offset(-height, height, _percent);
-        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
-      } else if (_direction == ShimmerDirection.btt) {
-        dx = 0.0;
-        dy = _offset(height, -height, _percent);
-        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
-      } else {
-        dx = _offset(-width, width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+      if(mode == ShimmerMode.gradient){
+        Rect rect;
+        double dx, dy;
+        if (_direction == ShimmerDirection.rtl) {
+          dx = _offset(width, -width, _percent);
+          dy = 0.0;
+          rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+        } else if (_direction == ShimmerDirection.ttb) {
+          dx = 0.0;
+          dy = _offset(-height, height, _percent);
+          rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
+        } else if (_direction == ShimmerDirection.btt) {
+          dx = 0.0;
+          dy = _offset(height, -height, _percent);
+          rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
+        } else {
+          dx = _offset(-width, width, _percent);
+          dy = 0.0;
+          rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
+        }
+        layer ??= ShaderMaskLayer();
+        layer!
+          ..shader = _gradient.createShader(rect)
+          ..maskRect = offset & size
+          ..blendMode = BlendMode.srcIn;
+        context.pushLayer(layer!, super.paint, offset);
       }
-      layer ??= ShaderMaskLayer();
-      layer!
-        ..shader = _gradient.createShader(rect)
-        ..maskRect = offset & size
-        ..blendMode = BlendMode.srcIn;
-      context.pushLayer(layer!, super.paint, offset);
+      else if(mode == ShimmerMode.fade){
+        final LinearGradient fadedGradient = LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.centerRight,
+            colors: _gradient.colors.map((color) => color.withOpacity((_percent * (1-minFadeValue)) + minFadeValue)).toList(),
+            stops: _gradient.stops);
+        layer ??= ShaderMaskLayer();
+        layer!
+          ..shader = fadedGradient.createShader(const Offset(0,0) & Size(width,height))
+          ..maskRect = offset & size
+          ..blendMode = BlendMode.srcIn;
+        context.pushLayer(layer!, super.paint, offset);
+      }
     } else {
       layer = null;
     }
@@ -282,4 +348,8 @@ class _ShimmerFilter extends RenderProxyBox {
   double _offset(double start, double end, double percent) {
     return start + (end - start) * percent;
   }
+}
+
+enum ShimmerMode{
+  gradient,fade
 }
