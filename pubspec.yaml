@@ -8,7 +8,7 @@ homepage: https://github.com/hnvn/flutter_shimmer
 
 environment:
   sdk: '>=2.17.0 <4.0.0'
-  flutter: ^1.9.1
+  flutter: '>=1.9.1'
 
 dependencies:
   flutter:
