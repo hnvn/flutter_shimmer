@@ -1,13 +1,13 @@
 name: shimmer
 description: A package provides an easy way to add shimmer effect in Flutter project
-version: 2.0.0
+version: 3.0.0
 repository: https://github.com/hnvn/flutter_shimmer
 issue_tracker: https://github.com/hnvn/flutter_shimmer/issues
 contributors: Gregor Weber <The-Redhat>, Vasilliy Ditsyask <vasilich6107>
 homepage: https://github.com/hnvn/flutter_shimmer
 
 environment:
-  sdk: '>=2.12.0-133.7.beta <3.0.0'
+  sdk: '>=2.17.0 <4.0.0'
   flutter: ^1.9.1
 
 dependencies:
