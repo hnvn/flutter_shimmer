@@ -56,6 +56,7 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 class Shimmer extends StatefulWidget {
   final Widget child;
   final Duration period;
+  final Duration delay;
   final ShimmerDirection direction;
   final Gradient gradient;
   final int loop;
@@ -67,6 +68,7 @@ class Shimmer extends StatefulWidget {
     required this.gradient,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
+    this.delay = Duration.zero,
     this.loop = 0,
     this.enabled = true,
   });
@@ -82,6 +84,7 @@ class Shimmer extends StatefulWidget {
     required Color baseColor,
     required Color highlightColor,
     this.period = const Duration(milliseconds: 1500),
+    this.delay = Duration.zero,
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
@@ -115,6 +118,8 @@ class Shimmer extends StatefulWidget {
     properties.add(
         DiagnosticsProperty<Duration>('period', period, defaultValue: null));
     properties
+        .add(DiagnosticsProperty<Duration>('delay', delay, defaultValue: null));
+    properties
         .add(DiagnosticsProperty<bool>('enabled', enabled, defaultValue: null));
     properties.add(DiagnosticsProperty<int>('loop', loop, defaultValue: 0));
   }
@@ -128,13 +133,18 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.period)
-      ..addStatusListener((AnimationStatus status) {
+      ..addStatusListener((AnimationStatus status) async {
         if (status != AnimationStatus.completed) {
           return;
         }
         _count++;
+        await Future<dynamic>.delayed(widget.delay);
+        if (!mounted) {
+          // if the widget was unmounted during the delay period
+          return;
+        }
         if (widget.loop <= 0) {
-          _controller.repeat();
+          _controller.forward(from: 0.0);
         } else if (_count < widget.loop) {
           _controller.forward(from: 0.0);
         }
