@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:shimmer_example/placeholders.dart';
 
-void main() => runApp(MyApp());
+import 'placeholders.dart';
+
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Shimmer',
       routes: <String, WidgetBuilder>{
-        'loading': (_) => LoadingListPage(),
+        'loading': (_) => const LoadingListPage(),
         'slide': (_) => SlideToUnlockPage(),
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -53,13 +58,13 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class LoadingListPage extends StatefulWidget {
+  const LoadingListPage({super.key});
+
   @override
-  _LoadingListPageState createState() => _LoadingListPageState();
+  State<LoadingListPage> createState() => _LoadingListPageState();
 }
 
 class _LoadingListPageState extends State<LoadingListPage> {
-  bool _enabled = true;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,29 +74,29 @@ class _LoadingListPageState extends State<LoadingListPage> {
       body: Shimmer.fromColors(
           baseColor: Colors.grey.shade300,
           highlightColor: Colors.grey.shade100,
-          enabled: _enabled,
-          child: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
+          enabled: true,
+          child: const SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                const BannerPlaceholder(),
-                const TitlePlaceholder(width: double.infinity),
-                const SizedBox(height: 16.0),
-                const ContentPlaceholder(
+                BannerPlaceholder(),
+                TitlePlaceholder(width: double.infinity),
+                SizedBox(height: 16.0),
+                ContentPlaceholder(
                   lineType: ContentLineType.threeLines,
                 ),
-                const SizedBox(height: 16.0),
-                const TitlePlaceholder(width: 200.0),
-                const SizedBox(height: 16.0),
-                const ContentPlaceholder(
+                SizedBox(height: 16.0),
+                TitlePlaceholder(width: 200.0),
+                SizedBox(height: 16.0),
+                ContentPlaceholder(
                   lineType: ContentLineType.twoLines,
                 ),
-                const SizedBox(height: 16.0),
-                const TitlePlaceholder(width: 200.0),
-                const SizedBox(height: 16.0),
-                const ContentPlaceholder(
+                SizedBox(height: 16.0),
+                TitlePlaceholder(width: 200.0),
+                SizedBox(height: 16.0),
+                ContentPlaceholder(
                   lineType: ContentLineType.twoLines,
                 ),
               ],
@@ -125,6 +130,8 @@ class SlideToUnlockPage extends StatelessWidget {
     'November',
     'December',
   ];
+
+  SlideToUnlockPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +185,8 @@ class SlideToUnlockPage extends StatelessWidget {
                 child: Opacity(
                   opacity: 0.8,
                   child: Shimmer.fromColors(
+                    baseColor: Colors.black12,
+                    highlightColor: Colors.white,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
@@ -196,8 +205,6 @@ class SlideToUnlockPage extends StatelessWidget {
                         )
                       ],
                     ),
-                    baseColor: Colors.black12,
-                    highlightColor: Colors.white,
                   ),
                 ),
               ))

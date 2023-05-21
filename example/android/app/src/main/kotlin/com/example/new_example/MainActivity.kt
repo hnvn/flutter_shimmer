@@ -1,4 +1,4 @@
-package vn.hunghd.shimmer.example.shimmer_example
+package com.example.new_example
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,4 +1,4 @@
-# shimmer_example
+# new_example
 
 A new Flutter project.
 

@@ -1,7 +1,4 @@
 ///
-/// * author: hunghd
-/// * email: hunghd.yb@gmail.com
-///
 /// A package provides an easy way to add shimmer effect to Flutter application
 ///
 
@@ -65,14 +62,14 @@ class Shimmer extends StatefulWidget {
   final bool enabled;
 
   const Shimmer({
-    Key? key,
+    super.key,
     required this.child,
     required this.gradient,
     this.direction = ShimmerDirection.ltr,
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
-  }) : super(key: key);
+  });
 
   ///
   /// A convenient constructor provides an easy and convenient way to create a
@@ -80,7 +77,7 @@ class Shimmer extends StatefulWidget {
   /// `highlightColor`.
   ///
   Shimmer.fromColors({
-    Key? key,
+    super.key,
     required this.child,
     required Color baseColor,
     required Color highlightColor,
@@ -88,7 +85,7 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
-  })  : gradient = LinearGradient(
+  }) : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
             colors: <Color>[
@@ -104,8 +101,7 @@ class Shimmer extends StatefulWidget {
               0.5,
               0.65,
               1.0
-            ]),
-        super(key: key);
+            ]);
 
   @override
   _ShimmerState createState() => _ShimmerState();
