@@ -38,7 +38,7 @@ class TitlePlaceholder extends StatelessWidget {
             height: 12.0,
             color: Colors.white,
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Container(
             width: width,
             height: 12.0,
