@@ -60,6 +60,7 @@ class Shimmer extends StatefulWidget {
   final Gradient gradient;
   final int loop;
   final bool enabled;
+  final Duration delay;
 
   const Shimmer({
     super.key,
@@ -69,6 +70,7 @@ class Shimmer extends StatefulWidget {
     this.period = const Duration(milliseconds: 1500),
     this.loop = 0,
     this.enabled = true,
+    this.delay = const Duration(milliseconds: 0),
   });
 
   ///
@@ -85,6 +87,7 @@ class Shimmer extends StatefulWidget {
     this.direction = ShimmerDirection.ltr,
     this.loop = 0,
     this.enabled = true,
+    this.delay = const Duration(milliseconds: 0),
   }) : gradient = LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.centerRight,
@@ -128,13 +131,20 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.period)
-      ..addStatusListener((AnimationStatus status) {
+      ..addStatusListener((AnimationStatus status) async {
         if (status != AnimationStatus.completed) {
           return;
         }
         _count++;
+
+        if (widget.delay > Duration.zero) await Future.delayed(widget.delay);
+
+        if (!mounted) {
+          return;
+        }
+
         if (widget.loop <= 0) {
-          _controller.repeat();
+          _controller.forward(from: 0.0);
         } else if (_count < widget.loop) {
           _controller.forward(from: 0.0);
         }
