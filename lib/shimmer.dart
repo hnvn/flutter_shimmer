@@ -142,7 +142,9 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
           return;
         }
         _count++;
-        await Future<dynamic>.delayed(widget.delay);
+        if (widget.delay > Duration.zero) {
+          await Future.delayed(widget.delay);
+        }
         if (!mounted) {
           // if the widget was unmounted during the delay period
           return;
