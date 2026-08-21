@@ -16,10 +16,14 @@ on a call to action.
 
 ```yaml
 dependencies:
-  shimmer: ^3.0.0
+  shimmer: ^4.0.0
+  material_ui: ^1.0.1
 ```
 
+`shimmer` 4.0 uses Flutter's standalone [`material_ui`](https://pub.dev/packages/material_ui) package (Flutter 3.44+). Apps that still import `package:flutter/material.dart` can wrap those subtrees in `MaterialUiCompatibilityBridge`.
+
 ```dart
+import 'package:material_ui/material_ui.dart';
 import 'package:shimmer/shimmer.dart';
 ```
 

@@ -14,6 +14,8 @@ package that paints a moving highlight over placeholder UI.
 
 There is no plugin/platform code. Painting is done with a `ShaderMaskLayer`.
 
+Design widgets come from the standalone [`material_ui`](https://pub.dev/packages/material_ui) package (`package:material_ui/material_ui.dart`), not `package:flutter/material.dart`.
+
 ## Widget tree
 
 ```
@@ -45,5 +47,7 @@ Geometry for the sliding highlight is in `shimmerHighlightRect` (marked
   arguments, short dartdoc on the public widget).
 - Keep the public surface small. Do not add new widgets or dependencies
   without an explicit request.
-- SDK constraint is `>=2.17.0 <4.0.0`. Avoid Dart 3-only syntax in
-  `lib/` (no switch expressions, no records).
+- SDK constraint is Dart `^3.12.0` and Flutter `>=3.44.0` (required by
+  `material_ui` 1.x).
+- Import Material from `package:material_ui/material_ui.dart`. Do not add
+  `package:flutter/material.dart` back.

@@ -64,6 +64,5 @@ the public API enough to confirm before shipping.
     description. Rename for pub.dev example scoring if you republish.
 14. **LICENSE** text is the Dart project BSD header (Google Inc., 2013), not
     a project-specific copyright. Confirm with the maintainer before editing.
-15. **Minimum Flutter SDK** is `>=1.9.1`, which is far below what current
-    `super.key` / Material 3 examples need. Raising it documents reality and
-    unlocks newer Dart syntax.
+15. **Minimum Flutter SDK** was raised to `>=3.44.0` (Dart `^3.12.0`) with
+    the `material_ui` 4.0.0 migration.

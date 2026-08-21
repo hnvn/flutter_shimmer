@@ -17,7 +17,8 @@ flutter pub get
 flutter run
 ```
 
-The app depends on the package via a path dependency in `pubspec.yaml`:
+The demo imports Material from `package:material_ui/material_ui.dart` (Flutter
+3.44+). The app depends on the package via a path dependency in `pubspec.yaml`:
 
 ```yaml
 shimmer:
