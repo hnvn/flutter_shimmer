@@ -1,9 +1,9 @@
 ///
 /// A package provides an easy way to add shimmer effect to Flutter application
 ///
-
 library shimmer;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -104,7 +104,7 @@ class Shimmer extends StatefulWidget {
             ]);
 
   @override
-  _ShimmerState createState() => _ShimmerState();
+  State<Shimmer> createState() => _ShimmerState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -128,30 +128,54 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.period)
-      ..addStatusListener((AnimationStatus status) {
-        if (status != AnimationStatus.completed) {
-          return;
-        }
-        _count++;
-        if (widget.loop <= 0) {
-          _controller.repeat();
-        } else if (_count < widget.loop) {
-          _controller.forward(from: 0.0);
-        }
-      });
+      ..addStatusListener(_onStatus);
     if (widget.enabled) {
-      _controller.forward();
+      _start();
+    }
+  }
+
+  void _onStatus(AnimationStatus status) {
+    if (status != AnimationStatus.completed) {
+      return;
+    }
+    _count++;
+    if (widget.loop <= 0) {
+      _controller.repeat();
+    } else if (_count < widget.loop) {
+      _controller.forward(from: 0.0);
+    }
+  }
+
+  void _start() {
+    _count = 0;
+    if (widget.loop <= 0) {
+      _controller.repeat();
+    } else {
+      _controller.forward(from: 0.0);
     }
   }
 
   @override
   void didUpdateWidget(Shimmer oldWidget) {
-    if (widget.enabled) {
-      _controller.forward();
-    } else {
-      _controller.stop();
-    }
     super.didUpdateWidget(oldWidget);
+    if (widget.period != oldWidget.period) {
+      _controller.duration = widget.period;
+    }
+    if (!widget.enabled) {
+      _controller.stop();
+      return;
+    }
+    if (!oldWidget.enabled) {
+      if (_controller.value == 0.0 || _controller.value == 1.0) {
+        _start();
+      } else {
+        _controller.forward();
+      }
+      return;
+    }
+    if (!_controller.isAnimating && widget.loop != oldWidget.loop) {
+      _start();
+    }
   }
 
   @override
@@ -235,35 +259,18 @@ class _ShimmerFilter extends RenderProxyBox {
       return;
     }
     _direction = newDirection;
-    markNeedsLayout();
+    markNeedsPaint();
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
     if (child != null) {
       assert(needsCompositing);
-
-      final double width = child!.size.width;
-      final double height = child!.size.height;
-      Rect rect;
-      double dx, dy;
-      if (_direction == ShimmerDirection.rtl) {
-        dx = _offset(width, -width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
-      } else if (_direction == ShimmerDirection.ttb) {
-        dx = 0.0;
-        dy = _offset(-height, height, _percent);
-        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
-      } else if (_direction == ShimmerDirection.btt) {
-        dx = 0.0;
-        dy = _offset(height, -height, _percent);
-        rect = Rect.fromLTWH(dx, dy - height, width, 3 * height);
-      } else {
-        dx = _offset(-width, width, _percent);
-        dy = 0.0;
-        rect = Rect.fromLTWH(dx - width, dy, 3 * width, height);
-      }
+      final Rect rect = shimmerHighlightRect(
+        size: child!.size,
+        direction: _direction,
+        percent: _percent,
+      );
       layer ??= ShaderMaskLayer();
       layer!
         ..shader = _gradient.createShader(rect)
@@ -274,8 +281,36 @@ class _ShimmerFilter extends RenderProxyBox {
       layer = null;
     }
   }
+}
 
-  double _offset(double start, double end, double percent) {
-    return start + (end - start) * percent;
+/// Sliding rectangle used as the shader bounds for the highlight.
+///
+/// The band is three times the child's width or height so the highlight can
+/// travel fully across the child while [percent] goes from `0.0` to `1.0`.
+@visibleForTesting
+Rect shimmerHighlightRect({
+  required Size size,
+  required ShimmerDirection direction,
+  required double percent,
+}) {
+  final double width = size.width;
+  final double height = size.height;
+  switch (direction) {
+    case ShimmerDirection.rtl:
+      final double dx = _offset(width, -width, percent);
+      return Rect.fromLTWH(dx - width, 0.0, 3 * width, height);
+    case ShimmerDirection.ttb:
+      final double dy = _offset(-height, height, percent);
+      return Rect.fromLTWH(0.0, dy - height, width, 3 * height);
+    case ShimmerDirection.btt:
+      final double dy = _offset(height, -height, percent);
+      return Rect.fromLTWH(0.0, dy - height, width, 3 * height);
+    case ShimmerDirection.ltr:
+      final double dx = _offset(-width, width, percent);
+      return Rect.fromLTWH(dx - width, 0.0, 3 * width, height);
   }
+}
+
+double _offset(double start, double end, double percent) {
+  return start + (end - start) * percent;
 }
