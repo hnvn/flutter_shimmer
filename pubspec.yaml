@@ -1,18 +1,24 @@
 name: shimmer
-description: A package provides an easy way to add shimmer effect in Flutter project
-version: 3.0.0
+description: A lightweight Flutter widget that paints a moving highlight over skeleton placeholders and call-to-action text.
+version: 4.0.0
 repository: https://github.com/hnvn/flutter_shimmer
 issue_tracker: https://github.com/hnvn/flutter_shimmer/issues
 contributors: Gregor Weber <The-Redhat>, Vasilliy Ditsyask <vasilich6107>
 homepage: https://github.com/hnvn/flutter_shimmer
+topics:
+  - animation
+  - loading
+  - shimmer
+  - ui
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
-  flutter: '>=1.9.1'
+  sdk: ^3.12.0
+  flutter: '>=3.44.0'
 
 dependencies:
   flutter:
     sdk: flutter
+  material_ui: ^1.0.1
 
 dev_dependencies:
   flutter_test:

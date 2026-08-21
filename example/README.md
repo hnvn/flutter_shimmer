@@ -1,16 +1,26 @@
-# new_example
+# Shimmer example
 
-A new Flutter project.
+Demo app for the [`shimmer`](https://pub.dev/packages/shimmer) package.
 
-## Getting Started
+## Screens
 
-This project is a starting point for a Flutter application.
+- **Loading List** — one `Shimmer.fromColors` wrapping a column of skeleton
+  placeholders (`BannerPlaceholder`, `TitlePlaceholder`, `ContentPlaceholder`).
+- **Slide To Unlock** — a highlight passing over a call-to-action row.
 
-A few resources to get you started if this is your first Flutter project:
+## Run
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+From this directory:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+flutter run
+```
+
+The demo imports Material from `package:material_ui/material_ui.dart` (Flutter
+3.44+). The app depends on the package via a path dependency in `pubspec.yaml`:
+
+```yaml
+shimmer:
+  path: ..
+```

@@ -1,4 +1,14 @@
 
+## 4.0.0
+
+* **BREAKING:** Use the standalone [`material_ui`](https://pub.dev/packages/material_ui) package instead of `package:flutter/material.dart`. Requires Flutter `>=3.44.0` and Dart `^3.12.0`.
+* Keep the animation duration in sync when `period` changes, and restart cleanly when `enabled` is toggled back on
+* Start infinite loops with `AnimationController.repeat()` instead of a first `forward()` cycle
+* Treat `direction` updates as paint work, not layout work
+* Expand widget tests for construction, animation, looping, and highlight geometry
+* Refresh README, example README, and add `docs/` for architecture and optimization notes
+* Remove leftover `lib/main.dart` counter app from the package
+
 ## 3.0.0
 
 * upgrade sdk constraint to support Dart 3
