@@ -9,6 +9,7 @@ package that paints a moving highlight over placeholder UI.
 |------|------|
 | `lib/shimmer.dart` | Entire public API (`Shimmer`, `ShimmerDirection`, `Shimmer.fromColors`) |
 | `test/shimmer_test.dart` | Widget tests plus geometry tests for `shimmerHighlightRect` |
+| `tool/coverage_summary.py` | Prints line coverage from `coverage/lcov.info` (CI + local) |
 | `example/` | Sample app: loading list and slide-to-unlock |
 | `example/lib/placeholders.dart` | Skeleton blocks used by the loading-list demo |
 

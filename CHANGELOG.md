@@ -1,4 +1,8 @@
 
+## Unreleased
+
+* Publish Flutter test coverage to Codecov and the GitHub Actions job summary
+
 ## 4.0.0
 
 * **BREAKING:** Use the standalone [`material_ui`](https://pub.dev/packages/material_ui) package instead of `package:flutter/material.dart`. Requires Flutter `>=3.44.0` and Dart `^3.12.0`.
