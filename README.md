@@ -2,6 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/shimmer.svg)](https://pub.dev/packages/shimmer)
 ![unit test](https://github.com/hnvn/flutter_shimmer/workflows/unit%20test/badge.svg)
+[![codecov](https://codecov.io/gh/hnvn/flutter_shimmer/graph/badge.svg)](https://codecov.io/gh/hnvn/flutter_shimmer)
 
 A lightweight Flutter widget that paints a moving highlight over placeholder
 UI. Typical uses are skeleton screens while data loads, and a sliding highlight
